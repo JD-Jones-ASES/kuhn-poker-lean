@@ -118,9 +118,10 @@ theorem gn_case_one_I (a b k : ℝ) (ha : 0 < a) (hb : 0 < b) (u v : Fin 3 → �
     mul_nonneg (mul_nonneg (mul_nonneg ha.le hb.le) (sub_nonneg.mpr hu2')) zero_le_two,
     mul_nonneg (mul_nonneg hb.le hd.le) (sub_nonneg.mpr hv2')]
 
-theorem gn_case_one_II (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (x y : Fin 3 → ℝ)
+theorem gn_case_one_II (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (ξ : ℝ) (hξ₀ : 0 ≤ ξ)
+    (hξ₁ : (2 * a + b) * ξ ≤ 2 * (a - b)) (x y : Fin 3 → ℝ)
     (hx : ∀ c, x c ∈ Set.Icc (0 : ℝ) 1) (hy : ∀ c, y c ∈ Set.Icc (0 : ℝ) 1) :
-    payoff a b (x, y) (![b / (2 * a + b), 0, 1], ![0, (2 * a - b) / (2 * a + b), 1]) ≤
+    payoff a b (x, y) (![b / (2 * a + b), ξ, 1], ![0, (2 * a - b) / (2 * a + b), 1]) ≤
       -(b ^ 2) / (6 * (2 * a + b)) := by
   have hd : 0 < 2 * a + b := by positivity
   obtain ⟨hx0, hx0'⟩ := hx 0
@@ -139,11 +140,13 @@ theorem gn_case_one_II (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (x 
       ((2 * a + b) * p - b) = 0 := by rw [hp, sub_self, mul_zero]
   have e₂ : (2 * (x 0) * a + (x 0) * b - (x 2) * b) * ((2 * a + b) * q - (2 * a - b)) = 0 := by
     rw [hq, sub_self, mul_zero]
-  linarith [mul_nonneg (mul_nonneg (sub_nonneg.mpr hx0') hy0) (mul_nonneg hb.le hd.le),
+  linarith [mul_nonneg (mul_nonneg (sub_nonneg.mpr hx0') hy0)
+      (mul_nonneg (mul_nonneg hb.le hd.le) (by linarith : (0 : ℝ) ≤ 1 + ξ)),
     mul_nonneg hx1 (mul_nonneg hb.le hb.le),
     mul_nonneg (mul_nonneg (sub_nonneg.mpr hx2') (sub_nonneg.mpr hy2'))
-      (mul_nonneg hb.le (by linarith : (0 : ℝ) ≤ 4 * a - b)),
-    mul_nonneg (mul_nonneg (sub_nonneg.mpr hx2') hy2) (mul_nonneg hb.le (sub_nonneg.mpr hab))]
+      (add_nonneg (mul_nonneg hb.le (by linarith : (0 : ℝ) ≤ 4 * a - b))
+        (mul_nonneg (mul_nonneg (by linarith : (0 : ℝ) ≤ 2 * a) hd.le) hξ₀)),
+    mul_nonneg (mul_nonneg (sub_nonneg.mpr hx2') hy2) (mul_nonneg hb.le (sub_nonneg.mpr hξ₁))]
 
 /-! ### Case 3, `a ≤ b ≤ 2a`: the value `−b(2a − b)/(6d)` -/
 
@@ -208,7 +211,7 @@ theorem guarantees_case_one_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab 
   · exact gn_isValid₂ (gn_frac_mem hb.le (by linarith) hd) gn_zero_mem gn_one_mem gn_zero_mem
       (gn_frac_mem (by linarith) (by linarith) hd) gn_one_mem
   · rintro ⟨x, y⟩ hσ
-    exact gn_case_one_II a b ha hb hab x y (fun c => (hσ c).1) (fun c => (hσ c).2)
+    exact gn_case_one_II a b ha hb hab 0 le_rfl (by linarith) x y (fun c => (hσ c).1) (fun c => (hσ c).2)
 
 theorem guarantees_case_three_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
     (η : ℝ) (hη : η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b))) :
@@ -524,5 +527,124 @@ theorem gn_case_one_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a)
   refine ⟨y 2, ⟨hy2, hy2'⟩, ?_⟩
   refine Prod.ext (funext fun c => ?_) (funext fun c => ?_) <;> fin_cases c <;>
     simp [z0, z1, z2, zy0, zy1]
+
+/-! ### Extensions: II's optimal strategies in Case 1
+
+For `b ≤ a` the second player's optimal strategies form a segment: the five coordinates of Kuhn's Case 1
+strategy are forced, and the bet with the `2` after a pass is free in `[0, 2(a − b)/d]`. On the diagonal
+`a = b` the segment is a point: II's optimal strategy is unique at every ante. The "only if" uses five pure
+strategies of I. -/
+
+/-- Case 1, `b ≤ a`: II's optimal strategies are exactly Kuhn's, with the bet with the `2` after a pass free in
+`[0, 2(a − b)/d]`. -/
+theorem gn_case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔
+      ∃ ξ ∈ Set.Icc (0 : ℝ) (2 * (a - b) / (2 * a + b)),
+        τ = (![b / (2 * a + b), ξ, 1], ![0, (2 * a - b) / (2 * a + b), 1]) := by
+  have hd : 0 < 2 * a + b := by positivity
+  constructor
+  swap
+  · rintro ⟨ξ, ⟨hξ₀, hξ₁⟩, rfl⟩
+    rw [le_div_iff₀ hd] at hξ₁
+    rw [gn_value_case_one hab]
+    have hξ1 : ξ ≤ 1 := le_of_mul_le_mul_right (by linarith : ξ * (2 * a + b) ≤ 1 * (2 * a + b)) hd
+    refine ⟨gn_isValid₂ (gn_frac_mem hb.le (by linarith) hd) ⟨hξ₀, hξ1⟩ gn_one_mem gn_zero_mem
+      (gn_frac_mem (by linarith) (by linarith) hd) gn_one_mem, ?_⟩
+    rintro ⟨x, y⟩ hσ
+    exact gn_case_one_II a b ha hb hab ξ hξ₀ (by linarith) x y (fun c => (hσ c).1) (fun c => (hσ c).2)
+  rintro ⟨hτ, h⟩
+  obtain ⟨u, v⟩ := τ
+  simp only [Strategy₂.IsValid, Set.mem_Icc] at hτ
+  obtain ⟨⟨hu0, hu0'⟩, hv0, hv0'⟩ := hτ 0
+  obtain ⟨⟨hu1, hu1'⟩, hv1, hv1'⟩ := hτ 1
+  obtain ⟨⟨hu2, hu2'⟩, hv2, hv2'⟩ := hτ 2
+  rw [gn_value_case_one hab] at h
+  have key : ∀ x y : Fin 3 → ℝ, Strategy₁.IsValid (x, y) →
+      (2 * a + b) * (6 * payoff a b (x, y) (u, v)) + b * b ≤ 0 := by
+    intro x y hσ
+    have h1 := h (x, y) hσ
+    rw [le_div_iff₀ (by positivity)] at h1
+    linarith
+  -- I's pure strategies (card 0, card 1, card 2): fold–fold–bet, bet–fold–bet, fold–call–bet,
+  -- bet–call–bet, fold–fold–call
+  have F1 := key ![0, 0, 1] ![0, 0, 0]
+    (gn_isValid₁ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+  have F2 := key ![1, 0, 1] ![0, 0, 0]
+    (gn_isValid₁ gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+  have F3 := key ![0, 0, 1] ![0, 1, 0]
+    (gn_isValid₁ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem)
+  have F4 := key ![1, 0, 1] ![0, 1, 0]
+    (gn_isValid₁ gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem)
+  have F5 := key ![0, 0, 0] ![0, 0, 1]
+    (gn_isValid₁ gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+  rw [payoff_eq_sum] at F1 F2 F3 F4 F5
+  simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte] at F1 F2 F3 F4 F5
+  have H3 : (2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b)) + (2 * a + b) * (1 - u 2)
+      + (2 * a + b) * v 0 ≤ 0 := by
+    have h' : b * ((2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b)) + (2 * a + b) * (1 - u 2)
+        + (2 * a + b) * v 0) ≤ 0 := by linarith only [F3]
+    exact nonpos_of_mul_nonpos_right h' hb
+  have Z : (2 * a + b) * (2 * a + b) * (1 - v 2) + (2 * a + b) * (2 * a + b) * v 0
+      + 2 * a * (2 * a + b) * (1 - u 2) ≤ 0 := by
+    linarith only [F2, mul_nonneg ha.le (neg_nonneg.mpr H3)]
+  have q1 : 0 ≤ (2 * a + b) * (2 * a + b) * (1 - v 2) := mul_nonneg (mul_nonneg hd.le hd.le) (sub_nonneg.mpr hv2')
+  have q2 : 0 ≤ (2 * a + b) * (2 * a + b) * v 0 := mul_nonneg (mul_nonneg hd.le hd.le) hv0
+  have q3 : 0 ≤ 2 * a * (2 * a + b) * (1 - u 2) :=
+    mul_nonneg (mul_nonneg (by linarith) hd.le) (sub_nonneg.mpr hu2')
+  have zv0 : v 0 = 0 :=
+    le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [Z, q1, q3]) (mul_pos hd hd)) hv0
+  have zv2 : v 2 = 1 := by
+    have h' := nonpos_of_mul_nonpos_right (by linarith only [Z, q2, q3] :
+      (2 * a + b) * (2 * a + b) * (1 - v 2) ≤ 0) (mul_pos hd hd)
+    linarith
+  have zu2 : u 2 = 1 := by
+    have h' := nonpos_of_mul_nonpos_right (by linarith only [Z, q1, q2] :
+      2 * a * (2 * a + b) * (1 - u 2) ≤ 0) (by positivity)
+    linarith
+  simp only [zv0, zv2, zu2] at F1 F2 F4 F5 H3
+  have hAD : (2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b)) = 0 := by
+    have h' : 0 ≤ a * ((2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b))) := by
+      linarith only [F2]
+    exact le_antisymm (by linarith only [H3]) (nonneg_of_mul_nonneg_right h' ha)
+  have hAD₁ : a * ((2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b))) = 0 := by
+    rw [hAD, mul_zero]
+  have hAD₂ : b * ((2 * a + b) * u 0 - b + ((2 * a + b) * v 1 - (2 * a - b))) = 0 := by
+    rw [hAD, mul_zero]
+  have hD : (2 * a + b) * v 1 - (2 * a - b) = 0 := by
+    have k1 : (2 * a + b) * ((2 * a + b) * v 1 - (2 * a - b)) ≤ 0 := by linarith only [F1, hAD₁]
+    have k2 : 0 ≤ (2 * a + b) * ((2 * a + b) * v 1 - (2 * a - b)) := by linarith only [F4, hAD₂]
+    exact le_antisymm (nonpos_of_mul_nonpos_right k1 hd) (nonneg_of_mul_nonneg_right k2 hd)
+  have hA0 : (2 * a + b) * u 0 - b = 0 := by linarith only [hAD, hD]
+  have hA0' : (2 * a - b) * ((2 * a + b) * u 0 - b) = 0 := by rw [hA0, mul_zero]
+  have hξ : (2 * a + b) * u 1 ≤ 2 * (a - b) := by
+    have k3 : 0 ≤ b * (2 * (a - b) - (2 * a + b) * u 1) := by linarith only [F5, hA0']
+    linarith only [nonneg_of_mul_nonneg_right k3 hb]
+  have zu0 : u 0 = b / (2 * a + b) := by
+    rw [eq_div_iff hd.ne']
+    linarith only [hA0]
+  have zv1 : v 1 = (2 * a - b) / (2 * a + b) := by
+    rw [eq_div_iff hd.ne']
+    linarith only [hD]
+  refine ⟨u 1, ⟨hu1, (le_div_iff₀ hd).mpr (by linarith only [hξ])⟩, ?_⟩
+  refine Prod.ext (funext fun c => ?_) (funext fun c => ?_) <;> fin_cases c <;>
+    simp [zu0, zu2, zv0, zv1, zv2]
+
+/-- On the diagonal `a = b` (Kuhn's game at every scale), II's optimal strategy is unique. -/
+theorem gn_diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+    Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) := by
+  have e₁ : a / (2 * a + a) = 1 / 3 := by
+    rw [div_eq_div_iff (by positivity) (by norm_num)]
+    ring
+  have e₂ : (2 * a - a) / (2 * a + a) = 1 / 3 := by
+    rw [div_eq_div_iff (by positivity) (by norm_num)]
+    ring
+  have e₃ : 2 * (a - a) / (2 * a + a) = 0 := by
+    rw [sub_self, mul_zero, zero_div]
+  rw [gn_case_one_II_iff a a ha ha le_rfl, e₁, e₂, e₃]
+  constructor
+  · rintro ⟨ξ, ⟨h₀, h₁⟩, rfl⟩
+    rw [le_antisymm h₁ h₀]
+  · rintro rfl
+    exact ⟨0, ⟨le_rfl, le_rfl⟩, rfl⟩
 
 end KuhnPoker
