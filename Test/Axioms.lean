@@ -41,7 +41,14 @@ run_cmd do
       `KuhnPoker.basic₂_guarantees, `KuhnPoker.hasMixedValue, `KuhnPoker.guaranteesMixed₁_iff,
       `KuhnPoker.guaranteesMixed₂_iff, `KuhnPoker.hasValue_general,
       `KuhnPoker.kuhnValue_one_one, `KuhnPoker.guarantees_case_one,
-      `KuhnPoker.guarantees_case_three, `KuhnPoker.guarantees_case_four] do
+      `KuhnPoker.guarantees_case_three, `KuhnPoker.guarantees_case_four,
+      `KuhnPoker.upper_certificate, `KuhnPoker.lower_certificate,
+      `KuhnPoker.isEquilibrium_iff_explicit, `KuhnPoker.case_one_I_unique,
+      `KuhnPoker.case_one_II_iff, `KuhnPoker.diagonal_II_unique,
+      `KuhnPoker.case_three_I_unique, `KuhnPoker.case_three_II_iff,
+      `KuhnPoker.case_three_II_set, `KuhnPoker.case_three_printed_interval,
+      `KuhnPoker.case_three_printed_upper_end_fails, `KuhnPoker.case_four_I_iff,
+      `KuhnPoker.case_four_II_iff] do
     unless env.contains n do
       logError m!"Compared theorem is missing from the environment: {n}"
   logInfo m!"Audited {checked} project constants; unexpected axiom dependencies: {rejected}."

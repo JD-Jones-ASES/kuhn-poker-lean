@@ -230,7 +230,7 @@ theorem guarantees_case_three_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (ha
   · rintro ⟨x, y⟩ hσ
     exact gn_case_three_II a b ha hb η hη x y (fun c => (hσ c).1) (fun c => (hσ c).2)
 
-theorem guarantees_case_four_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) :
+theorem guarantees_case_four_internal (a b : ℝ) (_ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) :
     Guarantees₁ a b (![0, 0, 0], ![0, 0, 1]) 0 ∧ Guarantees₂ a b (![0, 0, 1], ![0, 0, 1]) 0 := by
   refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
   · exact gn_isValid₁ gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem
@@ -274,7 +274,7 @@ theorem gn_case_three_II_identity (a b η : ℝ) (ha : 0 < a) (hb : 0 < b) (x y 
 /-- The corrected Case 3 interval is sharp: with the other five coordinates of II's strategy as pinned, the
 calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/d ≤ η ≤ b/d`. Below the
 interval I gains by betting the `1` (bluffing); above it, by betting the `3` first. -/
-theorem gn_case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
+theorem case_three_II_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
       η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) := by
   refine ⟨fun h => ?_, fun hη => (guarantees_case_three_internal a b ha hb hab hb2 η hη).2⟩
@@ -303,11 +303,11 @@ theorem gn_case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ 
 
 /-- Kuhn's printed Case 3 interval `b/d ≤ η ≤ (a + b)/d` (p. 102) holds only at its lower end: there, and only
 there, II's strategy guarantees the value. -/
-theorem gn_case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
+theorem case_three_printed_interval_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
     (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) := by
   have hd : 0 < 2 * a + b := by positivity
-  rw [gn_case_three_II_iff a b ha hb hab hb2 η]
+  rw [case_three_II_iff_internal a b ha hb hab hb2 η]
   constructor
   · rintro ⟨-, h2⟩
     exact le_antisymm h2 hη.1
@@ -315,9 +315,9 @@ theorem gn_case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (ha
     exact ⟨div_le_div_of_nonneg_right (by linarith) hd.le, le_rfl⟩
 
 /-- At `a = 2`, `b = 3`, Kuhn's printed upper end `η = (a + b)/d = 5/7` does not guarantee the value. -/
-theorem gn_case_three_printed_upper_end_fails :
+theorem case_three_printed_upper_end_fails_internal :
     ¬ Guarantees₂ 2 3 (![3 / (2 * 2 + 3), 0, 1], ![0, 5 / 7, 1]) (kuhnValue 2 3) := by
-  rw [gn_case_three_II_iff 2 3 (by norm_num) (by norm_num) (by norm_num) (by norm_num)]
+  rw [case_three_II_iff_internal 2 3 (by norm_num) (by norm_num) (by norm_num) (by norm_num)]
   rintro ⟨-, h⟩
   norm_num at h
 
@@ -330,7 +330,7 @@ certificate in the sequence-form atoms `x c`, `(1 − x c) y c`, `(1 − x c)(1 
 polynomial in `a` and `b`. -/
 
 /-- Case 3 off the diagonal, `a < b ≤ 2a`: I's optimal strategy is unique. -/
-theorem gn_case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
+theorem case_three_I_unique_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
     (σ : Strategy₁) :
     Guarantees₁ a b σ (kuhnValue a b) ↔ σ = (![0, 0, 0], ![0, (2 * a - b) / (2 * a + b), 1]) := by
   have hd : 0 < 2 * a + b := by positivity
@@ -416,7 +416,7 @@ theorem gn_case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < 
 
 /-- Case 1 off the diagonal, `b < a`: I's optimal strategy is unique up to the call with the `3`, which is
 never reached (I always bets the `3`). -/
-theorem gn_case_one_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a) (σ : Strategy₁) :
+theorem case_one_I_unique_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a) (σ : Strategy₁) :
     Guarantees₁ a b σ (kuhnValue a b) ↔
       ∃ k ∈ Set.Icc (0 : ℝ) 1, σ = (![b / (2 * a + b), 0, 1], ![0, 2 * a / (2 * a + b), k]) := by
   have hd : 0 < 2 * a + b := by positivity
@@ -537,7 +537,7 @@ strategies of I. -/
 
 /-- Case 1, `b ≤ a`: II's optimal strategies are exactly Kuhn's, with the bet with the `2` after a pass free in
 `[0, 2(a − b)/d]`. -/
-theorem gn_case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (τ : Strategy₂) :
+theorem case_one_II_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (τ : Strategy₂) :
     Guarantees₂ a b τ (kuhnValue a b) ↔
       ∃ ξ ∈ Set.Icc (0 : ℝ) (2 * (a - b) / (2 * a + b)),
         τ = (![b / (2 * a + b), ξ, 1], ![0, (2 * a - b) / (2 * a + b), 1]) := by
@@ -630,7 +630,7 @@ theorem gn_case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a)
     simp [zu0, zu2, zv0, zv1, zv2]
 
 /-- On the diagonal `a = b` (Kuhn's game at every scale), II's optimal strategy is unique. -/
-theorem gn_diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+theorem diagonal_II_unique_internal (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
     Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) := by
   have e₁ : a / (2 * a + a) = 1 / 3 := by
     rw [div_eq_div_iff (by positivity) (by norm_num)]
@@ -640,7 +640,7 @@ theorem gn_diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
     ring
   have e₃ : 2 * (a - a) / (2 * a + a) = 0 := by
     rw [sub_self, mul_zero, zero_div]
-  rw [gn_case_one_II_iff a a ha ha le_rfl, e₁, e₂, e₃]
+  rw [case_one_II_iff_internal a a ha ha le_rfl, e₁, e₂, e₃]
   constructor
   · rintro ⟨ξ, ⟨h₀, h₁⟩, rfl⟩
     rw [le_antisymm h₁ h₀]
@@ -656,7 +656,7 @@ probability at least `4a/d`; the bet with the `3` after a pass is free. Each "on
 strategies of the opponent. -/
 
 /-- Case 4, `2a ≤ b`: I's optimal strategies. -/
-theorem gn_case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
+theorem case_four_I_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
     Guarantees₁ a b σ 0 ↔ σ.IsValid ∧ σ.1 0 = 0 ∧ σ.1 1 = 0 ∧ σ.2 0 = 0 ∧ σ.2 1 = 0 ∧
       4 * a ≤ 2 * a * σ.1 2 + (2 * a + b) * ((1 - σ.1 2) * σ.2 2) := by
   obtain ⟨x, y⟩ := σ
@@ -731,7 +731,7 @@ theorem gn_case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a �
       mul_nonneg (mul_nonneg hb.le hx2) hv1]
 
 /-- Case 4 beyond its boundary, `2a < b`: II's optimal strategies. -/
-theorem gn_case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
+theorem case_four_II_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
     Guarantees₂ a b τ 0 ↔ τ.IsValid ∧ τ.1 0 = 0 ∧ τ.1 1 = 0 ∧ τ.2 0 = 0 ∧ τ.2 1 = 0 ∧
       4 * a ≤ (2 * a + b) * τ.2 2 := by
   obtain ⟨u, v⟩ := τ
@@ -789,7 +789,7 @@ For `a ≤ b < 2a` the second player's bets after a pass are forced (`b/d, 0, 1`
 polytope cut out by three linear inequalities; the slice `v₀ = 0, v₂ = 1` is the pinned interval for `η`. -/
 
 /-- Case 3 below its upper boundary, `a ≤ b < 2a`: II's optimal strategies. -/
-theorem gn_case_three_II_set (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b < 2 * a)
+theorem case_three_II_set_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b < 2 * a)
     (τ : Strategy₂) :
     Guarantees₂ a b τ (kuhnValue a b) ↔ τ.IsValid ∧ τ.1 = ![b / (2 * a + b), 0, 1] ∧
       (2 * a + b) * (τ.2 0 + τ.2 1) ≤ b ∧ 4 * a ≤ (2 * a + b) * (τ.2 1 + τ.2 2) ∧

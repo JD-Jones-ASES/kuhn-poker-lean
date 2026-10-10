@@ -34,6 +34,16 @@ project:
     identity (the target minus the payoff is a sum of nonnegative rational multiples of products of
     probabilities and their complements, or of such products with the case factors a - b, 2a - b, b - 2a), and
     every "only if" is a linear certificate from finitely many pure strategies; no library holds the game.
+    Beyond Kuhn's statements: the two certificate identities are stated as theorems; the equilibria of Kuhn's
+    game are exactly the pairs (kuhnI α k, kuhnII); and at general stakes the optimal sets are determined -
+    I's strategy is unique off the diagonal b = a (for b < a up to the unreached call with the 3; for
+    a < b <= 2a outright; for b >= 2a a polytope of one inequality), so Kuhn's one-parameter family exists
+    only at b = a; II's strategy is unique on the diagonal at every scale, a segment for b <= a (the bet with
+    the 2 after a pass free in [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal mode of behavior' in Case 1
+    holds for his reduced parameters only), a polytope of three inequalities for a <= b < 2a, and a polytope
+    of one inequality for b > 2a; the corrected Case 3 interval is sharp, and the printed one holds only at its
+    lower end. A third misprint is recorded in the documentation: p. 101's table gives β = 5/12 for (I) and
+    (J), where p. 100's mixtures and p. 101's own formula give 7/12.
   authors: ["JD Jones"]
   responsible_maintainers: ["JD Jones"]
   license: "MIT"
@@ -117,16 +127,17 @@ related_formalizations:
 
 status:
   scope: >-
-    Eighteen compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
+    Thirty-one compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
     Kuhn's game (a = b = 1): the value -1/18 in both guarantee and equilibrium form, uniqueness of the value,
     II's unique optimal strategy, I's optimal set as Kuhn's family with the unreached-information-set clause,
     Kuhn's essential matrix, his twelve and two basic optimal mixed strategies, the value of the normal form,
     and the exact optimal sets of the normal form in realization-plan and marginal form. For every ante and
     bet: the value function and guaranteeing strategies in the three regions b <= a, a <= b <= 2a, b >= 2a,
-    with the corrected Case 3 interval for eta. Not claimed as compared theorems: the full optimal sets at
-    general stakes beyond the stated witnesses (the standard-library checker replays sample points and the
-    documentation records what was found); Kuhn's convex-hull form of the optimal polytopes (replayed in the
-    checker, equivalent on paper to the realization-plan form stated); anything about more than three cards.
+    with the corrected Case 3 interval for eta; the two certificate identities; the explicit equilibrium set;
+    and the optimal sets at general stakes (I's in every region, II's off the line b = 2a). Not claimed as
+    compared theorems: II's optimal set on the line b = 2a; Kuhn's convex-hull form of the optimal polytopes
+    (replayed in the checker: exactly his twelve and two vertices; equivalent on paper to the realization-plan
+    form stated); anything about more than three cards.
     The intentional placeholders of Challenge.lean are excluded from proof counts; Solution.lean does not
     import Challenge.lean.
   sorry_count: 0
@@ -219,6 +230,71 @@ status:
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "comparator.json"
     - declaration: "KuhnPoker.guarantees_case_four"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.upper_certificate"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.lower_certificate"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.isEquilibrium_iff_explicit"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_one_I_unique"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_one_II_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.diagonal_II_unique"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_three_I_unique"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_three_II_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_three_II_set"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_three_printed_interval"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_three_printed_upper_end_fails"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_four_I_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.case_four_II_iff"
       file: "Solution.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -370,3 +446,68 @@ alignment:
       module: "Solution"
       status: "proved"
       note: "For b >= 2a, I never bets first and calls only with the 3, II bets after a pass and calls only with the 3; both guarantee 0."
+    - source: "This development (the certificate behind Kuhn's p. 100 value, upper side)"
+      lean: "KuhnPoker.upper_certificate"
+      module: "Solution"
+      status: "proved"
+      note: "For every strategy σ of I, -1/18 - payoff σ kuhnII = (1 - σ.1 0)σ.2 0/6 + σ.1 1/18 + (1 - σ.1 2)(1 - σ.2 2)/6."
+    - source: "This development (the certificate behind Kuhn's p. 101 family, lower side)"
+      lean: "KuhnPoker.lower_certificate"
+      module: "Solution"
+      status: "proved"
+      note: "For every α, k and every strategy τ of II, payoff (kuhnI α k) τ + 1/18 = α/2 τ.2 0 + α/2 (1 - τ.2 2) + (1/3 - α)/2 τ.1 1 + (1/18 + α/6)(1 - τ.1 2) - (1 - 3α)(1 - k)(τ.1 0 + τ.1 1)/2."
+    - source: "Kuhn 1950, pp. 100-102 (the optimal strategies of both players), as the set of equilibria"
+      lean: "KuhnPoker.isEquilibrium_iff_explicit"
+      module: "Solution"
+      status: "proved"
+      note: "IsEquilibrium 1 1 σ τ iff σ = kuhnI α k for some α in [0, 1/3], k in [0, 1] with 3α = 1 or k = 1, and τ = kuhnII."
+    - source: "This development (Kuhn 1950, p. 102, Case 1, states one strategy)"
+      lean: "KuhnPoker.case_one_I_unique"
+      module: "Solution"
+      status: "proved"
+      note: "For b < a, I's strategy guarantees the value iff it is (b/(2a+b), 0, 1; 0, 2a/(2a+b), k) for some k in [0, 1]."
+    - source: "This development (Kuhn 1950, p. 102, Case 1: 'both players have a unique optimal mode of behavior' holds for the reduced parameters only)"
+      lean: "KuhnPoker.case_one_II_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For b <= a, II's strategy guarantees the value iff it is (b/(2a+b), ξ, 1; 0, (2a-b)/(2a+b), 1) for some ξ in [0, 2(a-b)/(2a+b)]."
+    - source: "Kuhn 1950, p. 102 (Case 2 at every scale)"
+      lean: "KuhnPoker.diagonal_II_unique"
+      module: "Solution"
+      status: "proved"
+      note: "For a > 0, II's strategy guarantees kuhnValue a a iff it is (1/3, 0, 1; 0, 1/3, 1)."
+    - source: "This development (Kuhn 1950, p. 102, Case 3, states one strategy)"
+      lean: "KuhnPoker.case_three_I_unique"
+      module: "Solution"
+      status: "proved"
+      note: "For a < b <= 2a, I's strategy guarantees the value iff it is (0, 0, 0; 0, (2a-b)/(2a+b), 1)."
+    - source: "Kuhn 1950, p. 102, Case 3, the interval for η corrected and shown sharp"
+      lean: "KuhnPoker.case_three_II_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For a <= b <= 2a, with the other coordinates as pinned, (b/(2a+b), 0, 1; 0, η, 1) guarantees the value iff (2a-b)/(2a+b) <= η <= b/(2a+b)."
+    - source: "This development (Kuhn 1950, p. 102, Case 3, states the η family only)"
+      lean: "KuhnPoker.case_three_II_set"
+      module: "Solution"
+      status: "proved"
+      note: "For a <= b < 2a, II's strategy guarantees the value iff it is valid, its bets after a pass are (b/(2a+b), 0, 1), and its calls satisfy the three stated inequalities."
+    - source: "Kuhn 1950, p. 102, Case 3, the printed interval b/(2a+b) <= η <= (a+b)/(2a+b)"
+      lean: "KuhnPoker.case_three_printed_interval"
+      module: "Solution"
+      status: "proved"
+      note: "On the printed interval, II's strategy guarantees the value iff η = b/(2a+b)."
+    - source: "Kuhn 1950, p. 102, Case 3, the printed upper end"
+      lean: "KuhnPoker.case_three_printed_upper_end_fails"
+      module: "Solution"
+      status: "proved"
+      note: "At a = 2, b = 3, η = 5/7 does not guarantee the value."
+    - source: "This development (Kuhn 1950, p. 103, Case 4, states one strategy at b = 2a)"
+      lean: "KuhnPoker.case_four_I_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For 2a <= b, I's strategy guarantees 0 iff it is valid, never bets first, folds the 1 and the 2, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2."
+    - source: "This development (Kuhn 1950, p. 103, Case 4: 'II can vary his strategy considerably')"
+      lean: "KuhnPoker.case_four_II_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For 2a < b, II's strategy guarantees 0 iff it is valid, never bets the 1 or 2 after a pass, never calls with them, and 4a <= (2a+b) τ.2 2."

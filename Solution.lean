@@ -82,4 +82,72 @@ theorem guarantees_case_four (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a 
     Guarantees₁ a b (![0, 0, 0], ![0, 0, 1]) 0 ∧ Guarantees₂ a b (![0, 0, 1], ![0, 0, 1]) 0 :=
   guarantees_case_four_internal a b ha hb hab
 
+theorem upper_certificate (σ : Strategy₁) :
+    -1 / 18 - payoff 1 1 σ kuhnII =
+      (1 - σ.1 0) * σ.2 0 / 6 + σ.1 1 / 18 + (1 - σ.1 2) * (1 - σ.2 2) / 6 :=
+  upper_certificate_internal σ
+
+theorem lower_certificate (α k : ℝ) (τ : Strategy₂) :
+    payoff 1 1 (kuhnI α k) τ + 1 / 18 =
+      α / 2 * τ.2 0 + α / 2 * (1 - τ.2 2) + (1 / 3 - α) / 2 * τ.1 1 + (1 / 18 + α / 6) * (1 - τ.1 2)
+      - (1 - 3 * α) * (1 - k) * (τ.1 0 + τ.1 1) / 2 :=
+  lower_certificate_internal α k τ
+
+theorem isEquilibrium_iff_explicit (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium 1 1 σ τ ↔
+      (∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k) ∧
+        τ = kuhnII :=
+  isEquilibrium_iff_explicit_internal σ τ
+
+theorem case_one_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a) (σ : Strategy₁) :
+    Guarantees₁ a b σ (kuhnValue a b) ↔
+      ∃ k ∈ Set.Icc (0 : ℝ) 1, σ = (![b / (2 * a + b), 0, 1], ![0, 2 * a / (2 * a + b), k]) :=
+  case_one_I_unique_internal a b ha hb hab σ
+
+theorem case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔
+      ∃ ξ ∈ Set.Icc (0 : ℝ) (2 * (a - b) / (2 * a + b)),
+        τ = (![b / (2 * a + b), ξ, 1], ![0, (2 * a - b) / (2 * a + b), 1]) :=
+  case_one_II_iff_internal a b ha hb hab τ
+
+theorem diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+    Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) :=
+  diagonal_II_unique_internal a ha τ
+
+theorem case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
+    (σ : Strategy₁) :
+    Guarantees₁ a b σ (kuhnValue a b) ↔ σ = (![0, 0, 0], ![0, (2 * a - b) / (2 * a + b), 1]) :=
+  case_three_I_unique_internal a b ha hb hab hb2 σ
+
+theorem case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
+      η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) :=
+  case_three_II_iff_internal a b ha hb hab hb2 η
+
+theorem case_three_II_set (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b < 2 * a)
+    (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔ τ.IsValid ∧ τ.1 = ![b / (2 * a + b), 0, 1] ∧
+      (2 * a + b) * (τ.2 0 + τ.2 1) ≤ b ∧ 4 * a ≤ (2 * a + b) * (τ.2 1 + τ.2 2) ∧
+      2 * a * (2 * a + b) + 2 * a * b + b * (2 * a + b) * τ.2 0 ≤ (2 * a + b) * (2 * a + b) * τ.2 2 :=
+  case_three_II_set_internal a b ha hb hab hb2 τ
+
+theorem case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
+    (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) :=
+  case_three_printed_interval_internal a b ha hb hab hb2 η hη
+
+theorem case_three_printed_upper_end_fails :
+    ¬ Guarantees₂ 2 3 (![3 / (2 * 2 + 3), 0, 1], ![0, 5 / 7, 1]) (kuhnValue 2 3) :=
+  case_three_printed_upper_end_fails_internal
+
+theorem case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
+    Guarantees₁ a b σ 0 ↔ σ.IsValid ∧ σ.1 0 = 0 ∧ σ.1 1 = 0 ∧ σ.2 0 = 0 ∧ σ.2 1 = 0 ∧
+      4 * a ≤ 2 * a * σ.1 2 + (2 * a + b) * ((1 - σ.1 2) * σ.2 2) :=
+  case_four_I_iff_internal a b ha hb hab σ
+
+theorem case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
+    Guarantees₂ a b τ 0 ↔ τ.IsValid ∧ τ.1 0 = 0 ∧ τ.1 1 = 0 ∧ τ.2 0 = 0 ∧ τ.2 1 = 0 ∧
+      4 * a ≤ (2 * a + b) * τ.2 2 :=
+  case_four_II_iff_internal a b ha hb hab τ
+
 end KuhnPoker

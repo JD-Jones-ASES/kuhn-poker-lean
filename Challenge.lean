@@ -285,4 +285,74 @@ after a pass only with the `3` and calls only with the `3`; the value is `0`. -/
 theorem guarantees_case_four (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) :
     Guarantees₁ a b (![0, 0, 0], ![0, 0, 1]) 0 ∧ Guarantees₂ a b (![0, 0, 1], ![0, 0, 1]) 0 := sorry
 
+/-! ### The certificates, the equilibrium set, and the optimal sets at every ante and bet -/
+
+/-- The upper-bound certificate, as an identity for every strategy of I (valid or not): `−1/18` minus the payoff against `kuhnII` is a sum of three nonnegative products, so `kuhnII` holds every valid strategy to at most `−1/18`. -/
+theorem upper_certificate (σ : Strategy₁) :
+    -1 / 18 - payoff 1 1 σ kuhnII =
+      (1 - σ.1 0) * σ.2 0 / 6 + σ.1 1 / 18 + (1 - σ.1 2) * (1 - σ.2 2) / 6 := sorry
+
+/-- The lower-bound certificate, as an identity for every `α`, `k` and every strategy of II (valid or not): the payoff of `kuhnI α k` plus `1/18` is four nonnegative products minus a tail carrying the factor `(1 − 3α)(1 − k)`; the tail vanishes exactly under the clause of `guarantees₁_iff`. -/
+theorem lower_certificate (α k : ℝ) (τ : Strategy₂) :
+    payoff 1 1 (kuhnI α k) τ + 1 / 18 =
+      α / 2 * τ.2 0 + α / 2 * (1 - τ.2 2) + (1 / 3 - α) / 2 * τ.1 1 + (1 / 18 + α / 6) * (1 - τ.1 2)
+      - (1 - 3 * α) * (1 - k) * (τ.1 0 + τ.1 1) / 2 := sorry
+
+/-- The equilibria of Kuhn's game, explicitly: the pairs `(kuhnI α k, kuhnII)` with `α ∈ [0, 1/3]`, `k ∈ [0, 1]` and `3α = 1 ∨ k = 1`. -/
+theorem isEquilibrium_iff_explicit (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium 1 1 σ τ ↔
+      (∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k) ∧
+        τ = kuhnII := sorry
+
+/-- Case 1 off the diagonal, `b < a`: I's optimal strategy is unique up to the call with the `3`, which is never reached (I always bets the `3`); Kuhn's one-parameter family exists only at `b = a`. -/
+theorem case_one_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a) (σ : Strategy₁) :
+    Guarantees₁ a b σ (kuhnValue a b) ↔
+      ∃ k ∈ Set.Icc (0 : ℝ) 1, σ = (![b / (2 * a + b), 0, 1], ![0, 2 * a / (2 * a + b), k]) := sorry
+
+/-- Case 1, `b ≤ a`: II's optimal strategies are exactly Kuhn's, with the bet with the `2` after a pass free in `[0, 2(a − b)/(2a + b)]` — so Kuhn's "both players have a unique optimal mode of behavior" (p. 102) holds for his reduced parameters only. -/
+theorem case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔
+      ∃ ξ ∈ Set.Icc (0 : ℝ) (2 * (a - b) / (2 * a + b)),
+        τ = (![b / (2 * a + b), ξ, 1], ![0, (2 * a - b) / (2 * a + b), 1]) := sorry
+
+/-- On the diagonal `a = b` (Kuhn's game at every scale), II's optimal strategy is unique. -/
+theorem diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+    Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) := sorry
+
+/-- Case 3 off the diagonal, `a < b ≤ 2a`: I's optimal strategy is unique. -/
+theorem case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
+    (σ : Strategy₁) :
+    Guarantees₁ a b σ (kuhnValue a b) ↔ σ = (![0, 0, 0], ![0, (2 * a - b) / (2 * a + b), 1]) := sorry
+
+/-- The corrected Case 3 interval is sharp: with the other five coordinates of II's strategy as pinned, the calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/(2a + b) ≤ η ≤ b/(2a + b)`. Below the interval I gains by betting the `1` (bluffing); above it, by betting the `3` first. -/
+theorem case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
+      η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) := sorry
+
+/-- Case 3 below its upper boundary, `a ≤ b < 2a`: II's optimal strategies exactly — the bets after a pass are forced, and the calls form the polytope of three inequalities stated. -/
+theorem case_three_II_set (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b < 2 * a)
+    (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔ τ.IsValid ∧ τ.1 = ![b / (2 * a + b), 0, 1] ∧
+      (2 * a + b) * (τ.2 0 + τ.2 1) ≤ b ∧ 4 * a ≤ (2 * a + b) * (τ.2 1 + τ.2 2) ∧
+      2 * a * (2 * a + b) + 2 * a * b + b * (2 * a + b) * τ.2 0 ≤ (2 * a + b) * (2 * a + b) * τ.2 2 := sorry
+
+/-- Kuhn's printed Case 3 interval `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)` (p. 102) holds only at its lower end: there, and only there, II's strategy guarantees the value. -/
+theorem case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
+    (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) := sorry
+
+/-- At `a = 2`, `b = 3`, Kuhn's printed upper end `η = (a + b)/(2a + b) = 5/7` does not guarantee the value. -/
+theorem case_three_printed_upper_end_fails :
+    ¬ Guarantees₂ 2 3 (![3 / (2 * 2 + 3), 0, 1], ![0, 5 / 7, 1]) (kuhnValue 2 3) := sorry
+
+/-- Case 4, `2a ≤ b`: I's optimal strategies exactly — never bet first, fold the `1` and the `2`, and call with the `3` often enough that `4a ≤ 2a·σ.1 2 + (2a + b)(1 − σ.1 2)σ.2 2`. -/
+theorem case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
+    Guarantees₁ a b σ 0 ↔ σ.IsValid ∧ σ.1 0 = 0 ∧ σ.1 1 = 0 ∧ σ.2 0 = 0 ∧ σ.2 1 = 0 ∧
+      4 * a ≤ 2 * a * σ.1 2 + (2 * a + b) * ((1 - σ.1 2) * σ.2 2) := sorry
+
+/-- Case 4 beyond its boundary, `2a < b`: II's optimal strategies exactly — never bet the `1` or `2` after a pass, never call with them, and call with the `3` with probability at least `4a/(2a + b)`; the bet with the `3` after a pass is free. -/
+theorem case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
+    Guarantees₂ a b τ 0 ↔ τ.IsValid ∧ τ.1 0 = 0 ∧ τ.1 1 = 0 ∧ τ.2 0 = 0 ∧ τ.2 1 = 0 ∧
+      4 * a ≤ (2 * a + b) * τ.2 2 := sorry
+
 end KuhnPoker
