@@ -250,4 +250,72 @@ theorem hasValue_general_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) : HasVal
     obtain ⟨hI, hII⟩ := guarantees_case_four_internal a b ha hb h2.le
     exact ⟨⟨_, hI⟩, ⟨_, hII⟩⟩
 
+/-! ### Extensions: the Case 3 interval is sharp -/
+
+/-- The Case 3 certificate as an identity: for every strategy `(x, y)` of I (valid or not), `6d` times the payoff
+against II's Case 3 strategy is `−b(2a − b)` minus five products, each nonnegative exactly when `(x, y)` is
+valid and `η` lies in the corrected interval. -/
+theorem gn_case_three_II_identity (a b η : ℝ) (ha : 0 < a) (hb : 0 < b) (x y : Fin 3 → ℝ) :
+    (2 * a + b) * (6 * payoff a b (x, y) (![b / (2 * a + b), 0, 1], ![0, η, 1])) =
+      -(b * (2 * a - b)) - (x 0 * (2 * a + b) * ((2 * a + b) * η - (2 * a - b))
+        + (1 - x 0) * y 0 * (b * (2 * a + b)) + x 1 * (b * b) + x 2 * b * (b - (2 * a + b) * η)
+        + (1 - x 2) * (1 - y 2) * (b * (2 * a + b))) := by
+  have hd : 0 < 2 * a + b := by positivity
+  have hp : (2 * a + b) * (b / (2 * a + b)) = b := mul_div_cancel₀ b hd.ne'
+  generalize b / (2 * a + b) = p at hp ⊢
+  rw [payoff_eq_sum]
+  simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte]
+  linear_combination (-(2 * (x 1) * (y 1) * a + (x 1) * (y 1) * b - 2 * (x 1) * a + 2 * (x 2) * (y 2) * a
+      + (x 2) * (y 2) * b - 2 * (x 2) * a - 2 * (y 1) * a - (y 1) * b - 2 * (y 2) * a - (y 2) * b + 4 * a)) * hp
+
+/-- The corrected Case 3 interval is sharp: with the other five coordinates of II's strategy as pinned, the
+calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/d ≤ η ≤ b/d`. Below the
+interval I gains by betting the `1` (bluffing); above it, by betting the `3` first. -/
+theorem gn_case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
+      η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) := by
+  refine ⟨fun h => ?_, fun hη => (guarantees_case_three_internal a b ha hb hab hb2 η hη).2⟩
+  have hd : 0 < 2 * a + b := by positivity
+  have key : ∀ x y : Fin 3 → ℝ, Strategy₁.IsValid (x, y) →
+      (2 * a + b) * (6 * payoff a b (x, y) (![b / (2 * a + b), 0, 1], ![0, η, 1])) ≤ -(b * (2 * a - b)) := by
+    intro x y hv
+    have h1 := h.2 (x, y) hv
+    rw [gn_value_case_three hab hb2, le_div_iff₀ (by positivity)] at h1
+    linarith
+  have h1 := key ![1, 0, 0] ![0, 0, 1]
+    (gn_isValid₁ gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+  have h2 := key ![0, 0, 1] ![0, 0, 0]
+    (gn_isValid₁ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+  rw [gn_case_three_II_identity a b η ha hb] at h1 h2
+  simp only [Matrix.cons_val] at h1 h2
+  have k1 : 0 ≤ (2 * a + b) * ((2 * a + b) * η - (2 * a - b)) := by linarith
+  have k2 : 0 ≤ b * (b - (2 * a + b) * η) := by linarith
+  have k1' := nonneg_of_mul_nonneg_right k1 hd
+  have k2' := nonneg_of_mul_nonneg_right k2 hb
+  refine ⟨?_, ?_⟩
+  · rw [div_le_iff₀ hd]
+    linarith
+  · rw [le_div_iff₀ hd]
+    linarith
+
+/-- Kuhn's printed Case 3 interval `b/d ≤ η ≤ (a + b)/d` (p. 102) holds only at its lower end: there, and only
+there, II's strategy guarantees the value. -/
+theorem gn_case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
+    (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
+    Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) := by
+  have hd : 0 < 2 * a + b := by positivity
+  rw [gn_case_three_II_iff a b ha hb hab hb2 η]
+  constructor
+  · rintro ⟨-, h2⟩
+    exact le_antisymm h2 hη.1
+  · rintro rfl
+    exact ⟨div_le_div_of_nonneg_right (by linarith) hd.le, le_rfl⟩
+
+/-- At `a = 2`, `b = 3`, Kuhn's printed upper end `η = (a + b)/d = 5/7` does not guarantee the value. -/
+theorem gn_case_three_printed_upper_end_fails :
+    ¬ Guarantees₂ 2 3 (![3 / (2 * 2 + 3), 0, 1], ![0, 5 / 7, 1]) (kuhnValue 2 3) := by
+  rw [gn_case_three_II_iff 2 3 (by norm_num) (by norm_num) (by norm_num) (by norm_num)]
+  rintro ⟨-, h⟩
+  norm_num at h
+
 end KuhnPoker
