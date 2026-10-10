@@ -4,7 +4,7 @@ public import Mathlib
 
 /-!
 # Kuhn poker (Kuhn 1950): the value −1/18, the second player's unique optimal strategy, the first player's
-optimal set, the normal form, and the value at every ante and bet
+optimal set, the normal form, and the value, optimal sets and equilibria at every ante and bet
 
 H. W. Kuhn, *A simplified two-person poker*, Contributions to the Theory of Games I, Annals of Mathematics
 Studies 24 (1950), 97–103. Three cards `1 < 2 < 3` (here `0 < 1 < 2 : Fin 3`), one dealt to each player, the six
@@ -49,10 +49,12 @@ and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "
   `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)`, holds only at its lower end (at `a = 2, b = 3`, `η = 5/7` lets I gain);
 * beyond Kuhn: the two certificate identities (`upper_certificate`, `lower_certificate`); the equilibria explicitly
   (`isEquilibrium_iff_explicit`); the exact optimal sets at every ante and bet — I's in every region (`case_one_I_unique`,
-  `diagonal_I_iff`, `case_three_I_unique`, `case_four_I_iff`) and II's off the line `b = 2a` (`case_one_II_iff`,
-  `diagonal_II_unique`, `case_three_II_set`, `case_four_II_iff`); the corrected Case 3 interval is sharp and the printed
-  one holds only at its lower end (`case_three_II_iff`, `case_three_printed_interval`,
-  `case_three_printed_upper_end_fails`).
+  `diagonal_I_iff`, `case_three_I_unique`, `case_four_I_iff`) and II's in every region (`case_one_II_iff`,
+  `diagonal_II_unique`, `case_three_II_set`, `boundary_II_iff` with its identity `boundary_II_certificate`,
+  `case_four_II_iff`); every equilibrium pays the value and a pair is an equilibrium iff each strategy
+  guarantees it (`payoff_of_isEquilibrium_general`, `isEquilibrium_general_iff`), on `b = 2a` explicitly
+  (`boundary_isEquilibrium_iff`); the corrected Case 3 interval is sharp and the printed one holds only at its
+  lower end (`case_three_II_iff`, `case_three_printed_interval`, `case_three_printed_upper_end_fails`).
 
 The definitions are built from the game tree; no imported library holds the game. All proofs are over `ℝ` with the
 probabilities as real variables; every guarantee is a finite nonnegative-product identity (the gap between the
@@ -300,7 +302,7 @@ theorem upper_certificate (σ : Strategy₁) :
     -1 / 18 - payoff 1 1 σ kuhnII =
       (1 - σ.1 0) * σ.2 0 / 6 + σ.1 1 / 18 + (1 - σ.1 2) * (1 - σ.2 2) / 6 := sorry
 
-/-- The lower-bound certificate, as an identity for every `α`, `k` and every strategy of II (valid or not): the payoff of `kuhnI α k` plus `1/18` is four products, nonnegative for `α ∈ [0, 1/3]` and valid `τ`, minus a tail carrying the factor `(1 − 3α)(1 − k)`; the tail vanishes exactly under the clause of `guarantees₁_iff`. -/
+/-- The lower-bound certificate, as an identity for every `α`, `k` and every strategy of II (valid or not): the payoff of `kuhnI α k` plus `1/18` is four products, nonnegative for `α ∈ [0, 1/3]` and valid `τ`, minus a tail carrying the factor `(1 − 3α)(1 − k)`; the tail vanishes identically in `τ` under precisely the clause of `guarantees₁_iff`. -/
 theorem lower_certificate (α k : ℝ) (τ : Strategy₂) :
     payoff 1 1 (kuhnI α k) τ + 1 / 18 =
       α / 2 * τ.2 0 + α / 2 * (1 - τ.2 2) + (1 / 3 - α) / 2 * τ.1 1 + (1 / 18 + α / 6) * (1 - τ.1 2)
@@ -368,5 +370,48 @@ theorem case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b
 theorem case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
     Guarantees₂ a b τ 0 ↔ τ.IsValid ∧ τ.1 0 = 0 ∧ τ.1 1 = 0 ∧ τ.2 0 = 0 ∧ τ.2 1 = 0 ∧
       4 * a ≤ (2 * a + b) * τ.2 2 := sorry
+
+/-- The identity behind II's optimal set on the line `b = 2a`, for every `a` and every pair of strategies (valid or
+not) in which II never bets the `2` after a pass: `−3` times the payoff is `a` times six products, each nonnegative
+when I's strategy is valid and II's lies in the polytope of `boundary_II_iff`. -/
+theorem boundary_II_certificate (a : ℝ) (σ : Strategy₁) (τ : Strategy₂)
+    (hmid : τ.1 1 = 0) :
+    -3 * payoff a (2 * a) σ τ = a *
+      (2 * σ.1 0 * (τ.2 1 + τ.2 2 - 1)
+        + (1 - σ.1 0) * σ.2 0 * τ.1 2
+        + σ.1 1 * (2 * τ.2 2 - 1 - τ.1 0 - τ.2 0)
+        + (1 - σ.1 1) * σ.2 1 * (τ.1 2 - 2 * τ.1 0)
+        + σ.1 2 * (τ.1 0 - τ.2 0 - τ.2 1)
+        + 2 * (1 - σ.1 2) * (1 - σ.2 2) * τ.1 0) := sorry
+
+/-- The line `b = 2a`: II's optimal strategies exactly — valid, never betting the `2` after a pass, and with the bets
+`u` after a pass and the calls `v` satisfying `2u₀ ≤ u₂`, `v₀ + v₁ ≤ u₀`, `1 ≤ v₁ + v₂` and `1 + u₀ + v₀ ≤ 2v₂` (a
+polytope whose nine vertices `scripts/check_boundary.py` replays); Kuhn's p. 103 remark that at `b = 2a` II "can
+vary his strategy considerably", made exact. -/
+theorem boundary_II_iff (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+    Guarantees₂ a (2 * a) τ 0 ↔ τ.IsValid ∧ τ.1 1 = 0 ∧
+      2 * τ.1 0 ≤ τ.1 2 ∧ τ.2 0 + τ.2 1 ≤ τ.1 0 ∧
+      1 ≤ τ.2 1 + τ.2 2 ∧ 1 + τ.1 0 + τ.2 0 ≤ 2 * τ.2 2 := sorry
+
+/-- At every ante `a > 0` and bet `b > 0`, every equilibrium pays I exactly `kuhnValue a b`. -/
+theorem payoff_of_isEquilibrium_general (a b : ℝ) (ha : 0 < a) (hb : 0 < b)
+    (σ : Strategy₁) (τ : Strategy₂) (h : IsEquilibrium a b σ τ) :
+    payoff a b σ τ = kuhnValue a b := sorry
+
+/-- At every ante `a > 0` and bet `b > 0`, a pair is an equilibrium iff each strategy guarantees `kuhnValue a b` (the
+exchangeability of optimal strategies in a zero-sum game); with the optimal sets this makes the equilibria explicit
+in every region. -/
+theorem isEquilibrium_general_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b)
+    (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium a b σ τ ↔
+      Guarantees₁ a b σ (kuhnValue a b) ∧ Guarantees₂ a b τ (kuhnValue a b) := sorry
+
+/-- The equilibria on the line `b = 2a`, explicitly: I never bets first, folds the `1` and the `2` to a bet and calls
+with the `3`, and II is any strategy of the polytope of `boundary_II_iff`. -/
+theorem boundary_isEquilibrium_iff (a : ℝ) (ha : 0 < a) (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium a (2 * a) σ τ ↔
+      σ = (![0, 0, 0], ![0, 0, 1]) ∧ τ.IsValid ∧ τ.1 1 = 0 ∧
+      2 * τ.1 0 ≤ τ.1 2 ∧ τ.2 0 + τ.2 1 ≤ τ.1 0 ∧
+      1 ≤ τ.2 1 + τ.2 2 ∧ 1 + τ.1 0 + τ.2 0 ≤ 2 * τ.2 2 := sorry
 
 end KuhnPoker

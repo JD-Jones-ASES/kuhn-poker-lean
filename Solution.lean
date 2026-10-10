@@ -155,4 +155,39 @@ theorem case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b)
       4 * a ≤ (2 * a + b) * τ.2 2 :=
   case_four_II_iff_internal a b ha hb hab τ
 
+theorem boundary_II_certificate (a : ℝ) (σ : Strategy₁) (τ : Strategy₂)
+    (hmid : τ.1 1 = 0) :
+    -3 * payoff a (2 * a) σ τ = a *
+      (2 * σ.1 0 * (τ.2 1 + τ.2 2 - 1)
+        + (1 - σ.1 0) * σ.2 0 * τ.1 2
+        + σ.1 1 * (2 * τ.2 2 - 1 - τ.1 0 - τ.2 0)
+        + (1 - σ.1 1) * σ.2 1 * (τ.1 2 - 2 * τ.1 0)
+        + σ.1 2 * (τ.1 0 - τ.2 0 - τ.2 1)
+        + 2 * (1 - σ.1 2) * (1 - σ.2 2) * τ.1 0) :=
+  boundary_II_certificate_internal a σ τ hmid
+
+theorem boundary_II_iff (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
+    Guarantees₂ a (2 * a) τ 0 ↔ τ.IsValid ∧ τ.1 1 = 0 ∧
+      2 * τ.1 0 ≤ τ.1 2 ∧ τ.2 0 + τ.2 1 ≤ τ.1 0 ∧
+      1 ≤ τ.2 1 + τ.2 2 ∧ 1 + τ.1 0 + τ.2 0 ≤ 2 * τ.2 2 :=
+  boundary_II_iff_internal a ha τ
+
+theorem payoff_of_isEquilibrium_general (a b : ℝ) (ha : 0 < a) (hb : 0 < b)
+    (σ : Strategy₁) (τ : Strategy₂) (h : IsEquilibrium a b σ τ) :
+    payoff a b σ τ = kuhnValue a b :=
+  payoff_of_isEquilibrium_general_internal a b ha hb σ τ h
+
+theorem isEquilibrium_general_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b)
+    (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium a b σ τ ↔
+      Guarantees₁ a b σ (kuhnValue a b) ∧ Guarantees₂ a b τ (kuhnValue a b) :=
+  isEquilibrium_general_iff_internal a b ha hb σ τ
+
+theorem boundary_isEquilibrium_iff (a : ℝ) (ha : 0 < a) (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium a (2 * a) σ τ ↔
+      σ = (![0, 0, 0], ![0, 0, 1]) ∧ τ.IsValid ∧ τ.1 1 = 0 ∧
+      2 * τ.1 0 ≤ τ.1 2 ∧ τ.2 0 + τ.2 1 ≤ τ.1 0 ∧
+      1 ≤ τ.2 1 + τ.2 2 ∧ 1 + τ.1 0 + τ.2 0 ≤ 2 * τ.2 2 :=
+  boundary_isEquilibrium_iff_internal a ha σ τ
+
 end KuhnPoker

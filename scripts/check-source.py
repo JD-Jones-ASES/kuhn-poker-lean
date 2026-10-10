@@ -5,8 +5,9 @@ Rejected outside comments and strings: sorry, sorryAx, admit, axiom, unsafe, par
 native_decide, implemented_by, extern, mutual, opaque, csimp, ofReduceNat, ofReduceBool (qualified or not), set_option, and
 every debug. option. Challenge.lean carries the submitted statements
 with intentional sorry placeholders, so it is checked for every token except sorry. lakefile.toml may
-set no debug. option and no leanOptions, moreLeanArgs, weakLeanArgs or -D argument. The compiled
-Test.Axioms module is a separate check.
+set no debug. option and no leanOptions, moreLeanArgs, weakLeanArgs or -D argument. The Python scripts may
+hold no control character other than tab, newline and carriage return (a control byte inside a regex
+silently drops its alternatives). The compiled Test.Axioms module is a separate check.
 """
 
 from pathlib import Path
@@ -19,7 +20,7 @@ FORBIDDEN = re.compile(
 CHALLENGE_FORBIDDEN = re.compile(
     r"\b(?:sorryAx|admit|axiom|unsafe|partial|native_decide|implemented_by|extern|mutual|opaque|csimp|ofReduceNat)\b"
     r"|\b(?:Lean\.)?ofReduceBool\b|\bset_option\b|\bdebug\.\w+")
-LAKEFILE_DEBUG = re.compile(r"debug\.|-D|(?:moreLeanArgs|weakLeanArgs|leanOptions)")
+LAKEFILE_DEBUG = re.compile(r"debug\.|-D|\b(?:moreLeanArgs|weakLeanArgs|leanOptions)\b")
 
 
 def code_without_comments_or_strings(source):
@@ -124,10 +125,15 @@ def main():
             if LAKEFILE_DEBUG.search(text):
                 print(f"lakefile.toml:{number}: prohibited option or argument {stripped}", file=sys.stderr)
                 failures += 1
+    for script in sorted((root / "scripts").glob("*.py")):
+        bad = sorted({byte for byte in script.read_bytes() if byte < 32 and byte not in (9, 10, 13)})
+        if bad:
+            print(f"{script.relative_to(root)}: control characters {bad}", file=sys.stderr)
+            failures += 1
     if failures:
         return 1
-    print(f"Source guard passed for {len(files)} proof files, Challenge.lean (every token except sorry) "
-          "and the lakefile options.")
+    print(f"Source guard passed for {len(files)} proof files, Challenge.lean (every token except sorry), "
+          "the lakefile options and the scripts' bytes.")
     return 0
 
 

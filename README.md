@@ -1,4 +1,4 @@
-# Kuhn poker: the value −1/18, the optimal sets, and the value and optimal sets at every ante and bet (II's except on the line b = 2a)
+# Kuhn poker: the value −1/18, the optimal sets, and the value, optimal sets and equilibria at every ante and bet
 
 Kuhn's simplified two-person poker (H. W. Kuhn, *A simplified two-person poker*, Contributions to the Theory of
 Games I, Ann. of Math. Studies 24 (1950) 97–103): three cards `1 < 2 < 3`, one dealt to each player, an ante of
@@ -10,7 +10,7 @@ card, I's probability of betting first and of calling after passing, and II's pr
 pass and of calling a bet.
 
 [Challenge.lean](Challenge.lean) builds the game from this tree (thirty-one definitions, namespace `KuhnPoker`)
-and states thirty-two theorems; [Solution.lean](Solution.lean) proves them, kernel-only; the table in
+and states thirty-seven theorems; [Solution.lean](Solution.lean) proves them, kernel-only; the table in
 [VERIFICATION.md](VERIFICATION.md) names each one. For Kuhn's game:
 
 - the value is `−1/18`: each player has a strategy guaranteeing it, a game has at most one value, an
@@ -37,15 +37,24 @@ For every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there witho
 he does not state): the value is `−b²/(6(2a + b))` for `b ≤ a`, `−b(2a − b)/(6(2a + b))` for `a ≤ b ≤ 2a` and
 `0` for `b ≥ 2a` (`hasValue_general`, `kuhnValue_one_one`), with explicit guaranteeing strategies in each case —
 Kuhn's for `b ≤ 2a`, II's Case 3 call taken from the corrected interval, and his `b = 2a` strategies for every
-`b ≥ 2a` (`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`); and the full optimal sets, which
-Kuhn gives only in his reduced parameters: I's strategy is unique for `b < a` up to the unreached call with the `3`
-(`case_one_I_unique`) and for `a < b ≤ 2a` outright (`case_three_I_unique`); on the diagonal `b = a` it is Kuhn's
-family at every scale (`diagonal_I_iff`); for `b ≥ 2a` it is cut out by one inequality (`case_four_I_iff`), a
-single strategy at `b = 2a` and beyond it a two-dimensional set in which I may also bet the `3` first, with
-probability at most `(b − 2a)/b` (a triangle in realization-plan coordinates); so Kuhn's bluffing family belongs
-to `b = a` alone. II's strategy is unique on the diagonal at every scale (`diagonal_II_unique`), a segment for
-`b ≤ a` (`case_one_II_iff`), a polytope of three inequalities for `a ≤ b < 2a` (`case_three_II_set`) and of one
-inequality for `b > 2a` (`case_four_II_iff`); the line `b = 2a` is left open for II.
+`b ≥ 2a` (`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`); every equilibrium pays
+`kuhnValue a b`, and a pair is an equilibrium iff each strategy guarantees it (`payoff_of_isEquilibrium_general`,
+`isEquilibrium_general_iff`), so the equilibria at every ante and bet are exactly the pairs of optimal strategies
+below. The full optimal sets, which Kuhn gives only in his reduced parameters: I's strategy is unique for `b < a`
+up to the unreached call with the `3` (`case_one_I_unique`) and for `a < b ≤ 2a` outright (`case_three_I_unique`);
+on the diagonal `b = a` it is Kuhn's family at every scale (`diagonal_I_iff`); for `b ≥ 2a` it is cut out by one
+inequality (`case_four_I_iff`), a single strategy at `b = 2a` and beyond it a two-dimensional set in which I may
+also bet the `3` first, with probability at most `(b − 2a)/b` (a triangle in realization-plan coordinates); so
+Kuhn's bluffing family belongs to `b = a` alone. II's strategy is unique on the diagonal at every scale
+(`diagonal_II_unique`), a segment for `b ≤ a` (`case_one_II_iff`), a polytope of three inequalities for
+`a ≤ b < 2a` (`case_three_II_set`), of one inequality for `b > 2a` (`case_four_II_iff`), and on the line `b = 2a`
+a five-dimensional polytope (`boundary_II_iff`): the bet with the `2` after a pass is `0` and, writing the bets
+after a pass `(p, 0, r)` and the calls `(s, t, w)`, `2p ≤ r`, `s + t ≤ p`, `1 ≤ t + w` and `1 + p + s ≤ 2w` — nine
+vertices (replayed), one of them calling a bet with the `1` half the time at an information set no equilibrium
+reaches; the neighbouring descriptions reach only a face and an edge of it (PROOF.md §5). The identity behind it is
+a theorem (`boundary_II_certificate`): with the bet with the `2` zero, `−3` times the payoff at `b = 2a` is `a` times
+six products, each nonnegative for a valid strategy of I against a strategy of the polytope; and the equilibria on
+the line are exactly I's single strategy with any strategy of the polytope (`boundary_isEquilibrium_iff`).
 
 Two corrections to the printed text and one scope note. In Case 3 the calling probability `η` with the `2`
 ranges exactly over `[(2a − b)/(2a + b), b/(2a + b)]` (`case_three_II_iff`), and the interval printed on p. 102,
@@ -60,9 +69,11 @@ states the solutions; in the full game II may also bet the `2` after a pass with
 Every guarantee is a finite nonnegative-product identity: the gap between the payoff and the value is a sum of
 products of the opponent's probabilities and their complements with nonnegative coefficients (rationals at
 `a = b = 1`; at general stakes polynomials built from `a`, `b`, `2a + b`, `a − b`, `2a − b`, `4a − b`, `b − 2a` and
-the interval factors `(2a + b)η − (2a − b)`, `b − (2a + b)η`, `2(a − b) − (2a + b)ξ`), and every "only if" is a
+the interval factors `(2a + b)η − (2a − b)`, `b − (2a + b)η`, `2(a − b) − (2a + b)ξ`, and on `b = 2a` the slacks of the
+four inequalities), and every "only if" is a
 linear certificate from finitely many pure strategies. `scripts/check_kuhn.py` replays the finite facts in the
-standard library, Kuhn's twelve and two vertices included; `python scripts/verify.py` runs every local check and
-ends with `VERIFY: PASS`. No formal library found by the dated search (2026-10-10) holds the game; nothing is
-derived from another project.
+standard library, Kuhn's twelve and two vertices included; `scripts/check_boundary.py` replays the line `b = 2a`
+(the vertex count and the dimension are replayed, not stated as theorems); `python scripts/verify.py`
+runs every local check and ends with `VERIFY: PASS`. No formal library found by the dated search (2026-10-10)
+holds the game; nothing is derived from another project.
 Lean v4.35.0-rc2, Mathlib v4.35.0-rc2; MIT ([LICENSE](LICENSE)); AI assistance in [DISCLOSURE.md](DISCLOSURE.md).

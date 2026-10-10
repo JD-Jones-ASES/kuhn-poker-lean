@@ -257,7 +257,7 @@ theorem hasValue_general_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) : HasVal
 /-! ### Extensions: the Case 3 interval is sharp -/
 
 /-- The Case 3 certificate as an identity: for every strategy `(x, y)` of I (valid or not), `6d` times the payoff
-against II's Case 3 strategy is `−b(2a − b)` minus five products, each nonnegative exactly when `(x, y)` is
+against II's Case 3 strategy is `−b(2a − b)` minus five products, each nonnegative whenever `(x, y)` is
 valid and `η` lies in the corrected interval. -/
 theorem gn_case_three_II_identity (a b η : ℝ) (ha : 0 < a) (hb : 0 < b) (x y : Fin 3 → ℝ) :
     (2 * a + b) * (6 * payoff a b (x, y) (![b / (2 * a + b), 0, 1], ![0, η, 1])) =

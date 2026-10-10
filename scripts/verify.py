@@ -4,11 +4,12 @@
     python scripts/verify.py [--fetch-cache] [--skip-build]
 
 In order: the pins (lean-toolchain and the Mathlib revision of lake-manifest.json are the committed
-ones), the source guard, the definition comparison between Challenge.lean and KuhnPoker/Defs.lean, the
+ones), the source guard and its subprocess controls for prohibited Lake options, the definition
+comparison between Challenge.lean and KuhnPoker/Defs.lean, the
 statement comparison between Challenge.lean and Solution.lean, the standard-library replays
-scripts/check_kuhn.py (every construction), the metadata (formalization.yaml parses;
-its title length, main results and alignment against comparator.json; no definition holes; no
-original-proof source), the Lean build of every target (including the Test audit, which fails on
+scripts/check_kuhn.py (every construction) and scripts/check_boundary.py (the line b = 2a), the metadata (formalization.yaml parses;
+its title length, main results and alignment against comparator.json, every alignment status proved; no
+definition holes; no original-proof source), the Lean build of every target (including the Test audit, which fails on
 any axiom beyond propext, Classical.choice and Quot.sound), the module-resolution check, the
 elaboration checks of the compared definitions (printed with pp.all from the Challenge and from
 KuhnPoker.Defs) and of the compared theorems' types (from the Challenge and from the Solution), which must
@@ -77,8 +78,8 @@ def check_replay():
 
 def check_yaml():
     """formalization.yaml parses; its title is within the registry's limit; its main_results match
-    comparator.json; its alignment lists the compared theorems in comparator.json's order; comparator.json lists no definition
-    holes; no original-proof source."""
+    comparator.json; its alignment lists the compared theorems in comparator.json's order with every status
+    proved; comparator.json lists no definition holes; no source has type or relationship original-proof."""
     path = ROOT / "formalization.yaml"
     if not path.exists():
         return step("formalization.yaml", False, "missing")
@@ -99,10 +100,13 @@ def check_yaml():
         aligned = [a["lean"] for a in data.get("alignment", {}).get("statements", [])]
         if aligned != config["theorem_names"]:
             problems.append("alignment.statements differ from comparator.json theorem_names in order")
+        statuses = {a.get("status") for a in data.get("alignment", {}).get("statements", [])}
+        if statuses != {"proved"}:
+            problems.append(f"alignment statuses other than proved: {sorted(statuses - {'proved'})}")
         if config.get("definition_names"):
             problems.append("comparator.json lists definition holes; this entry's definitions are "
                             "fully specified")
-        if any(src.get("type") == "original-proof" for src in data.get("sources", [])):
+        if any("original-proof" in (src.get("type"), src.get("relationship")) for src in data.get("sources", [])):
             problems.append("an original-proof source would force other/background on every other "
                             "source")
     except (KeyError, TypeError, ValueError) as error:
@@ -217,9 +221,11 @@ def main():
               f"{len(names)} names")
     ok &= check_pins()
     ok &= check_script("source guard", ["scripts/check-source.py"])
+    ok &= check_script("source guard controls", ["scripts/check_source_guard.py"])
     ok &= check_script("definitions", ["scripts/check_definitions.py"])
     ok &= check_script("statements", ["scripts/check_statements.py"])
     ok &= check_replay()
+    ok &= check_script("boundary certificates and exact polytope replay", ["-I", "scripts/check_boundary.py"])
     ok &= check_yaml()
     if not skip_build:
         if fetch:

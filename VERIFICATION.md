@@ -1,14 +1,14 @@
 # Verification
 
-All thirty-two statements of Challenge.lean have proofs. The local build, the axiom audit, the source guard, the
-definition and statement checks, the standard-library replay of the finite facts behind the compared statements,
-the metadata check, the module-resolution check, the elaboration check and Palomar's core-notation audit of the
-statements pass; `python scripts/verify.py` runs them all and ends with `VERIFY: PASS`. The checks below were last
-run on the tree of the final commit (the counts are printed by verify.py); a build log is evidence for that tree
-only. Theorems are numbered as in `comparator.json`, which is also their order in Challenge.lean. `comparator.json`
-lists no `definition_names`: a name there is a definition hole whose value the Solution supplies; the thirty-one
-definitions here are fully specified in the Challenge (the game built from Kuhn's tree), so the comparator checks
-the Solution's values against them.
+All thirty-seven statements of Challenge.lean have proofs. The local build, the axiom audit, the source guard and
+its controls, the definition and statement checks, the standard-library replays of the finite facts behind the
+compared statements, the metadata check, the module-resolution check, the elaboration check and Palomar's
+core-notation audit of the statements pass; `python scripts/verify.py` runs them all and ends with `VERIFY: PASS`.
+The checks below were last run on the tree of the final commit (the counts are printed by verify.py); a build log
+is evidence for that tree only. Theorems are numbered as in `comparator.json`, which is also their order in
+Challenge.lean. `comparator.json` lists no `definition_names`: a name there is a definition hole whose value the
+Solution supplies; the thirty-one definitions here are fully specified in the Challenge (the game built from
+Kuhn's tree), so the comparator checks the Solution's values against them.
 
 ## Formal scope
 
@@ -46,6 +46,11 @@ the Solution's values against them.
 | 30 | `case_three_printed_upper_end_fails` — at a = 2, b = 3, the printed upper end η = 5/7 fails | KuhnPoker/General.lean |
 | 31 | `case_four_I_iff` — 2a ≤ b: I's optimal strategies exactly | KuhnPoker/General.lean |
 | 32 | `case_four_II_iff` — 2a < b: II's optimal strategies exactly | KuhnPoker/General.lean |
+| 33 | `boundary_II_certificate` — b = 2a, the bet with the 2 zero: −3·payoff is a times six products, for every a and every pair | KuhnPoker/Boundary.lean |
+| 34 | `boundary_II_iff` — b = 2a: II's optimal strategies exactly (the bet with the 2 after a pass zero, and four inequalities) | KuhnPoker/Boundary.lean |
+| 35 | `payoff_of_isEquilibrium_general` — every a, b > 0: every equilibrium pays `kuhnValue a b` | KuhnPoker/Equilibrium.lean |
+| 36 | `isEquilibrium_general_iff` — every a, b > 0: a pair is an equilibrium iff each strategy guarantees `kuhnValue a b` | KuhnPoker/Equilibrium.lean |
+| 37 | `boundary_isEquilibrium_iff` — b = 2a: the equilibria are exactly I's single strategy with any strategy of II's polytope | KuhnPoker/Equilibrium.lean |
 
 ## What is checked
 
@@ -53,12 +58,15 @@ the Solution's values against them.
   toolchain and Mathlib (`lean-toolchain`, `lake-manifest.json`; `lake update` is never run).
 - **Axioms** — `Test/Axioms.lean` walks every public constant in `KuhnPoker.*` (private auxiliaries are not
   enumerated under the module system, but `collectAxioms` reaches every private constant a public proof uses) and
-  fails the build on any axiom beyond `propext`, `Classical.choice`, `Quot.sound`; it also fails if fewer than 170
+  fails the build on any axiom beyond `propext`, `Classical.choice`, `Quot.sound`; it also fails if fewer than 190
   constants are matched or any compared theorem is missing from the environment.
 - **Source guard** — `scripts/check-source.py` rejects `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`,
   `partial`, `implemented_by`, `extern`, `opaque`, `mutual`, `ofReduceBool`, `set_option` and every `debug.` option
   outside comments and strings in `KuhnPoker/`, `Solution.lean` and `Test/` (Challenge.lean's intentional `sorry`
-  placeholders excepted), and any `leanOptions`, `moreLeanArgs`, `weakLeanArgs` or `-D` in `lakefile.toml`.
+  placeholders excepted), any `leanOptions`, `moreLeanArgs`, `weakLeanArgs` or `-D` in `lakefile.toml`, and any
+  control character in the Python scripts; `scripts/check_source_guard.py` runs the guard on one clean fixture, six
+  prohibited-option fixtures and one with a control byte in a script, so a regex that silently drops an alternative
+  fails the run.
 - **Definitions and statements** — `scripts/check_definitions.py` compares every definition block of Challenge.lean
   with `KuhnPoker/Defs.lean` character for character; `scripts/check_statements.py` compares every theorem header
   of Challenge.lean with Solution.lean; `scripts/verify.py` prints every compared definition, and the type of every compared theorem, with
@@ -71,11 +79,16 @@ the Solution's values against them.
   polytopes of the normal form (an exact enumeration over the essential rows and columns, to which the
   realization-plan and marginal forms confine the support: exactly Kuhn's twelve and two); the general-stakes
   witnesses at sample stakes in every region and on both boundaries; and the refutation of the printed Case 3
-  interval.
+  interval. `scripts/check_boundary.py` rebuilds the payoff a second way (branching on I's pure action) and checks
+  the b = 2a identity at a = 1 on all 2,048 Boolean points of its eleven free coordinates (both sides are
+  multi-affine in them and linear in a, so the points decide it; the theorem states it for every a), the five pure deviations behind the polytope, its nine vertices by exact
+  elimination over every five of the fourteen constraints, all 27 pure responses at each vertex, a strict interior
+  point, and the agreement of the four inequalities with all 27 pure-response inequalities on 3,125 grid points.
 
 ## What is not checked here
 
 The statements' faithfulness to Kuhn's paper is argued in `formalization.yaml` (fidelity) and PROOF.md, not
-checked mechanically. II's optimal set on the line b = 2a, Kuhn's convex-hull form of the optimal polytopes (its vertices replayed by
+checked mechanically. The vertex count and the dimension of II's set on b = 2a (replayed by
+`scripts/check_boundary.py`), Kuhn's convex-hull form of the optimal polytopes (its vertices replayed by
 `scripts/check_kuhn.py`, not stated as a theorem; on paper equivalent to the realization-plan form proved) and the
 n-card game are outside the formal scope.

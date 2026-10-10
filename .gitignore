@@ -3,3 +3,5 @@
 .scratch/
 lanes/
 scripts/lane-build.sh
+__pycache__/
+*.py[cod]

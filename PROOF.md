@@ -94,5 +94,31 @@ quantities `HI` and `HII` of `case_three_I_unique` (each `≥ 0`), `(2a − b)·
 ad·f₂]` forces I's Case 3 strategy. The sharpness of the
 corrected interval: below `(2a − b)/d` I gains by betting the `1`, above `b/d` by betting the `3` first; on
 Kuhn's printed interval only its lower end `b/d` survives, and `η = 5/7` at `a = 2, b = 3` is the concrete failure.
-II's optimal set on the line `b = 2a` (computed on the bench, not proved here, to contain the limits of both
-neighbouring descriptions) is not characterized.
+II's optimal set on the line `b = 2a` is §5.
+
+## 5. The line `b = 2a`, and the equilibria at every ante and bet (`KuhnPoker/Boundary.lean`, `Equilibrium.lean`)
+
+II's strategy is `(u, v)` as in §4 (bets after a pass, calls), I's `(x, y)` (bets first, calls). **The identity**
+(`boundary_II_certificate`), for every `a` and every pair with `u₁ = 0`:
+`−3·payoff a (2a) (x, y) (u, v) = a·[2x₀(v₁ + v₂ − 1) + (1 − x₀)y₀u₂ + x₁(2v₂ − 1 − u₀ − v₀) + (1 − x₁)y₁(u₂ − 2u₀)
++ x₂(u₀ − v₀ − v₁) + 2(1 − x₂)(1 − y₂)u₀]` (`payoff_eq_sum`, the unfolding, `ring`). **The set** (`boundary_II_iff`): II
+guarantees `0` iff valid, `u₁ = 0`, `2u₀ ≤ u₂`, `v₀ + v₁ ≤ u₀`, `1 ≤ v₁ + v₂`, `1 + u₀ + v₀ ≤ 2v₂`. "Only if": I's pure
+strategy fold–fold–call (Kuhn's `(0, 0, 1)`) earns `a·u₁/3`, so `u₁ = 0`; then `(0, 1, 1)`, `(0, 0, 2)`, `(2, 0, 1)`
+and `(0, 2, 1)` earn `a(2u₀ − u₂)/3`, `a(v₀ + v₁ − u₀)/3`, `2a(1 − v₁ − v₂)/3`, `a(1 + u₀ + v₀ − 2v₂)/3`, one
+inequality each (`linarith only`; `a` divided out by `nonpos_of_mul_nonpos_right`). "If": under the four inequalities
+and validity each of the six products is nonnegative, so the identity gives `payoff ≤ 0` (`linarith only` over six
+`mul_nonneg` facts). The polytope has dimension five (interior point `(u₀, u₂, v₀, v₁, v₂) = (3/10, 4/5, 3/100, 3/20, 9/10)`)
+and nine vertices — `(0,0,0,0,1)`, `(0,1,0,0,1)`, `(1/3,2/3,0,1/3,2/3)`, `(1/3,1,0,1/3,2/3)`, `(1/2,1,0,0,1)`,
+`(1/2,1,0,1/4,3/4)`, `(1/2,1,0,1/2,3/4)`, `(1/2,1,0,1/2,1)`, `(1/2,1,1/2,0,1)` — replayed by `scripts/check_boundary.py`,
+not stated. The neighbouring theorems' limits are faces of it: `case_three_II_set` as `b → 2a⁻` gives the face
+`u₀ = 1/2` (on it `u₂ = 1`, and the three inequalities become `v₀ + v₁ ≤ 1/2`, `1 ≤ v₁ + v₂`, `3 + 2v₀ ≤ 4v₂`),
+`case_four_II_iff` as `b → 2a⁺` the edge `u₀ = 0` (on it `v₀ = v₁ = 0`, `v₂ = 1`, `u₂` free) between the first two
+vertices; two vertices lie in neither.
+
+**The equilibria at every ante and bet.** `payoff_of_isEquilibrium_general`: for an equilibrium `(σ, τ)` and the
+witnesses `(σ₀, τ₀)` of `hasValue_general`, `payoff σ τ ≤ payoff σ τ₀ ≤ v ≤ payoff σ₀ τ ≤ payoff σ τ`
+(`le_antisymm`). `isEquilibrium_general_iff`: from it each strategy guarantees the value; the converse is
+`co_isEquilibrium_of`. `boundary_isEquilibrium_iff`: `isEquilibrium_general_iff` at `b = 2a`, I's side by
+`case_three_I_unique` (whose strategy is `(0, 0, 0; 0, 0, 1)` there — `sub_self`, `zero_div`), II's by
+`boundary_II_iff`, the value `0` by `gn_value_case_four`. With §4's optimal sets this makes the equilibria explicit
+in every region: the pairs of optimal strategies.

@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Kuhn poker: the value -1/18, player II's unique optimal strategy, player I's one-parameter family, the normal form's basic optimal strategies and optimal sets, and the value and optimal sets at every ante and bet (II's off b = 2a), with Kuhn's Case 3 interval corrected"
+  name: "Kuhn poker: the value -1/18, player II's unique optimal strategy, player I's one-parameter family, the normal form's basic optimal strategies and optimal sets, and the value, both players' exact optimal sets and every equilibrium at every ante and bet, with Kuhn's Case 3 interval corrected"
   description: >-
     A Lean 4 development of Kuhn's simplified two-person poker (Kuhn 1950): three cards 1 < 2 < 3, one dealt
     to each player with the six deals equiprobable, an ante of a from each player and a single bet of b, player I
@@ -44,8 +44,12 @@ project:
     (b - 2a)/b), so Kuhn's one-parameter family is optimal only at b = a; II's strategy is unique on the
     diagonal at every scale, a segment for b <= a (the bet with the 2 after a pass free in
     [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal mode of behavior' in Case 1 holds in his behaviour
-    parameters only), a polytope of three inequalities for a <= b < 2a, and a polytope of one inequality for
-    b > 2a; the corrected Case 3 interval is sharp, and the printed one holds only at its lower end. A second
+    parameters only), a polytope of three inequalities for a <= b < 2a, a polytope of one inequality for
+    b > 2a, and on the line b = 2a a five-dimensional polytope (the bet with the 2 after a pass zero and, with
+    bets (p, 0, r) and calls (s, t, w), 2p <= r, s + t <= p, 1 <= t + w, 1 + p + s <= 2w; nine vertices, replayed);
+    at every ante a > 0 and bet b > 0 every equilibrium pays the value and a pair is an equilibrium iff each strategy
+    guarantees it, so the equilibria are exactly the pairs of optimal strategies, on b = 2a explicitly; the
+    corrected Case 3 interval is sharp, and the printed one holds only at its lower end. A second
     correction, a misprint, is noted in the documentation: p. 101's table gives β = 5/12 for (I) and (J), where
     p. 100's mixtures and p. 101's own formula give 7/12.
   authors: ["JD Jones"]
@@ -61,11 +65,11 @@ sources:
     authors: ["H. W. Kuhn"]
     id: "doi:10.1515/9781400881727-010"
     type: "paper"
-    location: "In: H. W. Kuhn, A. W. Tucker (eds.), Contributions to the Theory of Games, Volume I, Annals of Mathematics Studies 24, Princeton University Press (1950), 97-103; the whole paper read: p. 97 (the rules), p. 98 (the five courses of play and the coding of pure strategies), p. 99 (the essential 8 x 4 matrix), p. 100 (the twelve and two basic optimal strategies, the value -1/18), p. 101 (the behaviour parameters and the one-parameter family), pp. 102-103 (the general ante a and bet b, Cases 1-4, stated without proof)"
+    location: "In: H. W. Kuhn, A. W. Tucker (eds.), Contributions to the Theory of Games, Volume I, Annals of Mathematics Studies 24, Princeton University Press (1950), 97-103 (Crossref dates the DOI 1951-12-31 and gives pp. 97-104, the scan's eighth page being blank; the catalogues and zbMATH give 1950, 97-103); the whole paper read: p. 97 (the rules), p. 98 (the five courses of play and the coding of pure strategies), p. 99 (the essential 8 x 4 matrix), p. 100 (the twelve and two basic optimal strategies, the value -1/18), p. 101 (the behaviour parameters and the one-parameter family), pp. 102-103 (the general ante a and bet b, Cases 1-4, stated without proof)"
     relationship: "formalizes"
     author_endorsement: "not-contacted"
     note: >-
-      The source of every statement: the rules and payoffs (p. 97-98), the essential matrix (p. 99), the
+      The source of the game and of every classical statement: the rules and payoffs (p. 97-98), the essential matrix (p. 99), the
       basic optimal strategies and the value (p. 100), the behaviour-parameter family (p. 101), II's single
       solution (p. 102), and the general-stakes solutions with their values (pp. 102-103). The proofs here are
       not Kuhn's: his completeness argument goes through the superfluousness of dominated strategies and the
@@ -78,6 +82,14 @@ sources:
       where 7/12 is meant (noted in the documentation, not a theorem); and the scope of "both players have a
       unique optimal mode of behavior" in Case 1, true in his behaviour parameters, while in the full game II
       may also bet the 2 after a pass with any probability in [0, 2(a - b)/(2a + b)] (case_one_II_iff).
+  - title: "The Mathematics of Poker"
+    authors: ["Bill Chen", "Jerrod Ankenman"]
+    id: "isbn:9781886070257"
+    type: "book"
+    location: "ConJelCo, Pittsburgh (2006), x + 382 pp.; not read"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: "Named for context as a later poker-theory exposition that treats three-card games with a pot parameter; not read, nothing is taken from it, and no statement of this entry is attributed to it."
   - title: "Basic solutions of discrete games"
     authors: ["L. S. Shapley", "R. N. Snow"]
     id: "doi:10.1515/9781400881727-004"
@@ -184,15 +196,20 @@ related_formalizations:
 
 status:
   scope: >-
-    Thirty-two compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
+    Thirty-seven compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
     Kuhn's game (a = b = 1): the value -1/18 in both guarantee and equilibrium form, uniqueness of the value,
     the two certificate identities, the explicit equilibrium set, II's unique optimal strategy, I's optimal set
     as Kuhn's family with the unreached-information-set clause, Kuhn's essential matrix, his twelve and two
     basic optimal mixed strategies, the value of the normal form, and the exact optimal sets of the normal form
     in realization-plan and marginal form. For every ante and bet: the value function and guaranteeing
-    strategies in the three regions b <= a, a <= b <= 2a, b >= 2a, with the corrected Case 3 interval for eta,
-    and the optimal sets (I's in every region, the diagonal included; II's off the line b = 2a). Not claimed as
-    compared theorems: II's optimal set on the line b = 2a; Kuhn's convex-hull form of the optimal polytopes
+    strategies (a, b > 0) in the three regions b <= a, a <= b <= 2a, b >= 2a, with the corrected Case 3 interval for eta,
+    and both players' optimal sets in every region, the diagonal and the line b = 2a included (on that line
+    II's set is a five-dimensional polytope cut out, within the valid strategies, by one equation and four
+    inequalities, the six-product
+    identity behind it a theorem); every equilibrium pays the value and a pair is an equilibrium iff each
+    strategy guarantees it, at every ante and bet, the equilibria on b = 2a explicit. Not claimed as compared
+    theorems: the nine vertices and the dimension of II's set on b = 2a (replayed by
+    scripts/check_boundary.py); Kuhn's convex-hull form of the optimal polytopes
     (its vertices replayed by scripts/check_kuhn.py, not stated; equivalent on paper to the realization-plan
     form stated); anything about more than three cards.
     The intentional placeholders of Challenge.lean are excluded from proof counts; Solution.lean does not
@@ -361,6 +378,31 @@ status:
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.boundary_II_certificate"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.boundary_II_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.payoff_of_isEquilibrium_general"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.isEquilibrium_general_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.boundary_isEquilibrium_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
 
 automation:
   methods:
@@ -381,6 +423,13 @@ automation:
         supplied as mul_nonneg hints (the identities by ring, one by linear_combination; no nlinarith), each
         "only if" by linarith from finitely many pure strategies, and the normal-form statements by an affine
         bridge from mixed strategies to realization plans and marginals.
+    - method: "agent"
+      models: ["GPT-6 (OpenAI)"]
+      framework: "ChatGPT"
+      tool_setup: >-
+        A pre-submission review of the tree at a46246e (2026-10-10). Its proposals, the five statements on the
+        line b = 2a and the all-stakes equilibria with their proofs and the source guard's regex fix, were
+        checked here with the full verification gate before adoption; the documentation is this repository's.
   spend_usd: "not tracked"
 
 fidelity:
@@ -391,8 +440,10 @@ fidelity:
     courses as a polynomial in the probabilities. Kuhn's behaviour parameters (alpha, beta, gamma; xi, eta) on
     p. 101 live in the reduced game after dominated strategies are removed; here the strategies carry all
     twelve coordinates, and the removed ones are proved to take their forced values in every optimal
-    strategy (I: fold the 1 to a bet, never bet the 2 first, call with the 3 unless 3 alpha = 1; II: never
-    bet the 2 after a pass, always bet the 3 after a pass, never call with the 1, always call with the 3). The
+    strategy of Kuhn's game (I: fold the 1 to a bet, never bet the 2 first, call with the 3 unless 3 alpha = 1; II: never
+    bet the 2 after a pass, always bet the 3 after a pass, never call with the 1, always call with the 3); at
+    general stakes some are free (II's bet with the 2 for b < a, its bet with the 3 for b > 2a, its calls with
+    the 1 and the 2 on b = 2a), as the optimal-set theorems state. The
     family is indexed by alpha = gamma/3 in [0, 1/3] rather than Kuhn's gamma in [0, 1]. The clause "3 alpha =
     1 or k = 1" in guarantees₁_iff is the unreached-information-set convention made explicit: Kuhn's
     family says nothing about the call with the 3 when it always bets. Optimality is defined as guaranteeing
@@ -413,7 +464,8 @@ review:
     Kuhn's paper page by page, and VERIFICATION.md states what is checked and what is not. Mechanical
     correctness and agreement of formal statements do not establish priority or significance. Kuhn's 1950
     paper states the value and the optimal strategies for a = b = 1 and, without proof, the general-stakes
-    solutions; the optimal sets at general stakes, the region b > 2a and the corrections are not in it. No
+    solutions; the full-game optimal sets at general stakes, the region b > 2a and the corrections are not in it.
+    His p. 103 remark at b = 2a, 'The strategy for I is unique while II can vary his strategy considerably', names the freedom that boundary_II_iff makes exact. No
     earlier kernel check of these results was found by the dated search (Palomar's feed and day index, Hexagon,
     formal-conjectures, openai/math, the Lean game theory libraries, the arXiv API, GitHub code search in Lean,
     Isabelle, Coq and Agda, 2026-10-09 and 2026-10-10); no first is claimed beyond it.
@@ -576,8 +628,33 @@ alignment:
       module: "Solution"
       status: "proved"
       note: "For 2a <= b, I's strategy guarantees 0 iff it is valid, never bets the 1 or the 2 first, folds them, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2; at b = 2a this forces σ.1 2 = 0, and for b > 2a the 3 may be bet first with probability at most 1 - 2a/b."
-    - source: "This development (the region b > 2a, which Kuhn does not state; his p. 103 remark that II 'can vary his strategy considerably' concerns b = 2a, where II's set is not characterized here)"
+    - source: "This development (the region b > 2a, which Kuhn does not state; his p. 103 remark on II's freedom at b = 2a is boundary_II_iff)"
       lean: "KuhnPoker.case_four_II_iff"
       module: "Solution"
       status: "proved"
       note: "For 2a < b, II's strategy guarantees 0 iff it is valid, never bets the 1 or 2 after a pass, never calls with them, and 4a <= (2a+b) τ.2 2."
+    - source: "This development (the identity behind II's set on b = 2a)"
+      lean: "KuhnPoker.boundary_II_certificate"
+      module: "Solution"
+      status: "proved"
+      note: "For every a and every pair of strategies with II's bet with the 2 after a pass zero, -3 payoff a (2a) σ τ = a times six products: 2 σ.1 0 (τ.2 1 + τ.2 2 - 1), (1 - σ.1 0) σ.2 0 τ.1 2, σ.1 1 (2 τ.2 2 - 1 - τ.1 0 - τ.2 0), (1 - σ.1 1) σ.2 1 (τ.1 2 - 2 τ.1 0), σ.1 2 (τ.1 0 - τ.2 0 - τ.2 1), 2 (1 - σ.1 2)(1 - σ.2 2) τ.1 0."
+    - source: "This development (Kuhn 1950, p. 103, Case 4, states one strategy for II at b = 2a and remarks on its freedom)"
+      lean: "KuhnPoker.boundary_II_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For a > 0, II's strategy guarantees 0 at b = 2a iff it is valid, never bets the 2 after a pass, and 2 τ.1 0 <= τ.1 2, τ.2 0 + τ.2 1 <= τ.1 0, 1 <= τ.2 1 + τ.2 2, 1 + τ.1 0 + τ.2 0 <= 2 τ.2 2 (a five-dimensional polytope with nine vertices, replayed)."
+    - source: "Standard (the payoff of an equilibrium is the value), at every ante and bet"
+      lean: "KuhnPoker.payoff_of_isEquilibrium_general"
+      module: "Solution"
+      status: "proved"
+      note: "For a, b > 0, every equilibrium pays I exactly kuhnValue a b (a sandwich between the two guaranteeing strategies of hasValue_general)."
+    - source: "Standard (exchangeability of optimal strategies in zero-sum games), at every ante and bet"
+      lean: "KuhnPoker.isEquilibrium_general_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For a, b > 0, a pair is an equilibrium iff each strategy guarantees kuhnValue a b; with the optimal sets this makes the equilibria explicit in every region."
+    - source: "This development (Kuhn 1950, p. 103, Case 4: I's strategy at b = 2a and II's freedom)"
+      lean: "KuhnPoker.boundary_isEquilibrium_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For a > 0, (σ, τ) is an equilibrium at b = 2a iff σ = (0, 0, 0; 0, 0, 1) and τ lies in the polytope of boundary_II_iff."

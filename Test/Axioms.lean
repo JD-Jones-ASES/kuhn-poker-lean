@@ -32,8 +32,8 @@ run_cmd do
         unless allowed.contains ax do
           rejected := rejected + 1
           logError m!"Unexpected axiom dependency: {name} -> {ax}"
-  unless checked ≥ 170 do
-    logError m!"Axiom audit matched only {checked} project constants; expected at least 170"
+  unless checked ≥ 190 do
+    logError m!"Axiom audit matched only {checked} project constants; expected at least 190"
   for n in [`KuhnPoker.hasValue_one_one, `KuhnPoker.hasValue_unique,
       `KuhnPoker.exists_isEquilibrium, `KuhnPoker.payoff_of_isEquilibrium,
       `KuhnPoker.isEquilibrium_iff, `KuhnPoker.guarantees₂_iff, `KuhnPoker.guarantees₁_iff,
@@ -48,7 +48,9 @@ run_cmd do
       `KuhnPoker.case_three_I_unique, `KuhnPoker.case_three_II_iff,
       `KuhnPoker.case_three_II_set, `KuhnPoker.case_three_printed_interval,
       `KuhnPoker.case_three_printed_upper_end_fails, `KuhnPoker.case_four_I_iff,
-      `KuhnPoker.case_four_II_iff] do
+      `KuhnPoker.case_four_II_iff, `KuhnPoker.boundary_II_certificate,
+      `KuhnPoker.boundary_II_iff, `KuhnPoker.payoff_of_isEquilibrium_general,
+      `KuhnPoker.isEquilibrium_general_iff, `KuhnPoker.boundary_isEquilibrium_iff] do
     unless env.contains n do
       logError m!"Compared theorem is missing from the environment: {n}"
   logInfo m!"Audited {checked} project constants; unexpected axiom dependencies: {rejected}."

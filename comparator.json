@@ -33,7 +33,12 @@
     "KuhnPoker.case_three_printed_interval",
     "KuhnPoker.case_three_printed_upper_end_fails",
     "KuhnPoker.case_four_I_iff",
-    "KuhnPoker.case_four_II_iff"
+    "KuhnPoker.case_four_II_iff",
+    "KuhnPoker.boundary_II_certificate",
+    "KuhnPoker.boundary_II_iff",
+    "KuhnPoker.payoff_of_isEquilibrium_general",
+    "KuhnPoker.isEquilibrium_general_iff",
+    "KuhnPoker.boundary_isEquilibrium_iff"
   ],
   "definition_names": [],
   "permitted_axioms": [
