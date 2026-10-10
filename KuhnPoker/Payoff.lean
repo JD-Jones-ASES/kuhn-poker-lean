@@ -17,6 +17,7 @@ namespace KuhnPoker
 theorem payoff_eq_sum (a b : ℝ) (σ : Strategy₁) (τ : Strategy₂) :
     payoff a b σ τ = (dealPayoff a b σ τ 0 1 + dealPayoff a b σ τ 0 2 + dealPayoff a b σ τ 1 0
       + dealPayoff a b σ τ 1 2 + dealPayoff a b σ τ 2 0 + dealPayoff a b σ τ 2 1) / 6 := by
-  sorry
+  simp only [payoff, Fin.sum_univ_three, Fin.isValue, Fin.reduceEq, ↓reduceIte]
+  ring
 
 end KuhnPoker
