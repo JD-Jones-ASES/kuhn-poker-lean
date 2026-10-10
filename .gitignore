@@ -2,3 +2,4 @@
 .lanes-lock/
 .scratch/
 lanes/
+scripts/lane-build.sh

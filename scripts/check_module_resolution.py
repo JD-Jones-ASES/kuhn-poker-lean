@@ -16,7 +16,7 @@ def main():
     source_path = os.environ.get("LEAN_SRC_PATH", "")
     if not source_path:
         raise SystemExit("Run this check through lake env; LEAN_SRC_PATH is missing.")
-    config = json.loads((ROOT / "comparator.json").read_text())
+    config = json.loads((ROOT / "comparator.json").read_text(encoding="utf-8"))
     for key in ("challenge_module", "solution_module"):
         module = config[key]
         suffix = Path(*module.split(".")).with_suffix(".lean")

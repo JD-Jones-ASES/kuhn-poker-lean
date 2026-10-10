@@ -2,6 +2,7 @@ module
 
 public import KuhnPoker.Defs
 public import KuhnPoker.Payoff
+public import KuhnPoker.Value
 
 /-!
 # The value at every ante and bet
@@ -882,5 +883,28 @@ theorem case_three_II_set_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 
       mul_nonneg hx0 (mul_nonneg hd.le (sub_nonneg.mpr c₂)),
       mul_nonneg (mul_nonneg (sub_nonneg.mpr hx0') hy0) (mul_nonneg hb.le hd.le),
       mul_nonneg hx1 (sub_nonneg.mpr c₃)]
+
+/-- On the diagonal the payoff scales with the stakes: `payoff a a σ τ = a · payoff 1 1 σ τ`. -/
+theorem gn_payoff_scale (a : ℝ) (σ : Strategy₁) (τ : Strategy₂) : payoff a a σ τ = a * payoff 1 1 σ τ := by
+  rw [payoff_eq_sum, payoff_eq_sum]
+  simp only [dealPayoff, toHigher, Fin.isValue, Fin.reduceLT, ↓reduceIte]
+  ring
+
+/-- On the diagonal the value is `−a/18`. -/
+theorem gn_kuhnValue_diag (a : ℝ) (ha : 0 < a) : kuhnValue a a = a * (-1 / 18) := by
+  simp only [kuhnValue, le_refl, ↓reduceIte]
+  rw [div_eq_iff (by positivity)]
+  ring
+
+theorem diagonal_I_iff_internal (a : ℝ) (ha : 0 < a) (σ : Strategy₁) :
+    Guarantees₁ a a σ (kuhnValue a a) ↔
+      ∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k := by
+  rw [← guarantees₁_iff_internal σ]
+  simp only [Guarantees₁, gn_kuhnValue_diag a ha, gn_payoff_scale a]
+  constructor
+  · rintro ⟨hv, h⟩
+    exact ⟨hv, fun τ hτ => le_of_mul_le_mul_left (h τ hτ) ha⟩
+  · rintro ⟨hv, h⟩
+    exact ⟨hv, fun τ hτ => mul_le_mul_of_nonneg_left (h τ hτ) ha.le⟩
 
 end KuhnPoker

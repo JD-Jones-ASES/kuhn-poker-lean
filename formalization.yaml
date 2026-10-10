@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Kuhn poker: the value is -1/18, player II's optimal strategy is unique, player I's optimal strategies are Kuhn's one-parameter family, the twelve and two basic optimal mixed strategies and the optimal sets of the normal form, and the value at every ante and bet with Kuhn's Case 3 interval corrected"
+  name: "Kuhn poker: the value -1/18, player II's unique optimal strategy, player I's one-parameter family, the normal form's basic optimal strategies and optimal sets, and the value and optimal sets at every ante and bet (II's off b = 2a), with Kuhn's Case 3 interval corrected"
   description: >-
     A Lean 4 development of Kuhn's simplified two-person poker (Kuhn 1950): three cards 1 < 2 < 3, one dealt
     to each player with the six deals equiprobable, an ante of a from each player and a single bet of b, player I
@@ -33,17 +33,21 @@ project:
     some pure strategy of I earns more than the value). Every inequality is a finite nonnegative-product
     identity (the target minus the payoff is a sum of nonnegative rational multiples of products of
     probabilities and their complements, or of such products with the case factors a - b, 2a - b, b - 2a), and
-    every "only if" is a linear certificate from finitely many pure strategies; no library holds the game.
+    every "only if" is a linear certificate from finitely many pure strategies (the coefficients rationals at
+    a = b = 1 and, at general stakes, polynomials in a, b and the free parameter nonnegative on the case's region);
+    no formal library found by the dated search holds the game.
     Beyond Kuhn's statements: the two certificate identities are stated as theorems; the equilibria of Kuhn's
     game are exactly the pairs (kuhnI α k, kuhnII); and at general stakes the optimal sets are determined -
-    I's strategy is unique off the diagonal b = a (for b < a up to the unreached call with the 3; for
-    a < b <= 2a outright; for b >= 2a a polytope of one inequality), so Kuhn's one-parameter family exists
-    only at b = a; II's strategy is unique on the diagonal at every scale, a segment for b <= a (the bet with
-    the 2 after a pass free in [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal mode of behavior' in Case 1
-    holds for his reduced parameters only), a polytope of three inequalities for a <= b < 2a, and a polytope
-    of one inequality for b > 2a; the corrected Case 3 interval is sharp, and the printed one holds only at its
-    lower end. A third misprint is recorded in the documentation: p. 101's table gives β = 5/12 for (I) and
-    (J), where p. 100's mixtures and p. 101's own formula give 7/12.
+    I's strategy is unique for b < a (up to the unreached call with the 3) and for a < b <= 2a, is Kuhn's family
+    on the diagonal b = a at every scale, and for b >= 2a is cut out by one inequality (a single strategy at
+    b = 2a; beyond it a two-dimensional set in which I may also bet the 3 first, with probability at most
+    (b - 2a)/b), so Kuhn's one-parameter family is optimal only at b = a; II's strategy is unique on the
+    diagonal at every scale, a segment for b <= a (the bet with the 2 after a pass free in
+    [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal mode of behavior' in Case 1 holds in his behaviour
+    parameters only), a polytope of three inequalities for a <= b < 2a, and a polytope of one inequality for
+    b > 2a; the corrected Case 3 interval is sharp, and the printed one holds only at its lower end. A second
+    correction, a misprint, is noted in the documentation: p. 101's table gives β = 5/12 for (I) and (J), where
+    p. 100's mixtures and p. 101's own formula give 7/12.
   authors: ["JD Jones"]
   responsible_maintainers: ["JD Jones"]
   license: "MIT"
@@ -67,11 +71,13 @@ sources:
       not Kuhn's: his completeness argument goes through the superfluousness of dominated strategies and the
       kernel theory of discrete games (the papers of this study he cites), whereas every inequality here is a
       finite nonnegative-product identity and every "only if" a linear certificate from finitely many pure
-      strategies, with the four coordinates per player that Kuhn removes as superfluous proved forced rather
-      than cited. Two corrections to the printed text are stated and proved: the Case 3 interval for eta (see
-      the description), and the scope of "both players have a unique optimal mode of behavior" in Case 1,
-      which holds for the reduced parameters only (II may bet the 2 after a pass with any probability in
-      [0, 2(a - b)/(2a + b)]; this is stated in the documentation, not as a compared theorem).
+      strategies, with the coordinates Kuhn removes as superfluous (three of I's, four of II's) proved forced
+      rather than cited (I's call with the 3 except where 3 alpha = 1 leaves it unreached). Two corrections to
+      the printed text and one scope note: the Case 3 interval for eta (case_three_II_iff,
+      case_three_printed_interval, case_three_printed_upper_end_fails); p. 101's beta = 5/12 for (I) and (J),
+      where 7/12 is meant (noted in the documentation, not a theorem); and the scope of "both players have a
+      unique optimal mode of behavior" in Case 1, true in his behaviour parameters, while in the full game II
+      may also bet the 2 after a pass with any probability in [0, 2(a - b)/(2a + b)] (case_one_II_iff).
   - title: "Basic solutions of discrete games"
     authors: ["L. S. Shapley", "R. N. Snow"]
     id: "doi:10.1515/9781400881727-004"
@@ -83,8 +89,56 @@ sources:
       The kernel theory Kuhn's completeness proof invokes on pp. 100-101 ("all optimal strategies are convex
       linear combinations of the strategies given above"). Nothing from it is formalized or relied on: the
       optimal sets are characterized here by linear certificates, and Kuhn's convex-hull statement is replayed
-      in the standard-library checker (the optimal polytopes have exactly his twelve and two vertices) but not
+      by scripts/check_kuhn.py (an exact enumeration finds exactly his twelve and two vertices) but is not
       stated as a Lean theorem, whose "exactly" clause is the realization-plan form.
+  - title: "Solutions of finite two-person games"
+    authors: ["D. Gale", "S. Sherman"]
+    id: "doi:10.1515/9781400881727-005"
+    type: "paper"
+    location: "In: H. W. Kuhn, A. W. Tucker (eds.), Contributions to the Theory of Games, Volume I, Annals of Mathematics Studies 24, Princeton University Press (1950), 37-49; not read"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: "Kuhn's p. 100 takes the terms essential and superfluous from it. Nothing from it is used here."
+  - title: "Solutions of discrete, two-person games"
+    authors: ["H. F. Bohnenblust", "S. Karlin", "L. S. Shapley"]
+    id: "doi:10.1515/9781400881727-006"
+    type: "paper"
+    location: "In: H. W. Kuhn, A. W. Tucker (eds.), Contributions to the Theory of Games, Volume I, Annals of Mathematics Studies 24, Princeton University Press (1950), 51-72; not read"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: "Kuhn's p. 100 counts the linearly independent optimal strategies (6 and 2) by its results. Nothing from it is used here."
+  - title: "Efficient computation of behavior strategies"
+    authors: ["B. von Stengel"]
+    id: "doi:10.1006/game.1996.0050"
+    type: "paper"
+    location: "Games and Economic Behavior 14 (1996), no. 2, 220-246; not read"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: "The sequence form and realization plans, the terms of the normal-form statements and of the affine bridge; the bridge is proved here for Kuhn's game only, nothing is imported."
+  - title: "Zur Theorie der Gesellschaftsspiele"
+    authors: ["J. von Neumann"]
+    id: "doi:10.1007/BF01448847"
+    type: "paper"
+    location: "Mathematische Annalen 100 (1928), 295-320; not read"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: "The minimax theorem named in the note on PALOMAR-2026-10-01-000004; not used here, where the value is exhibited by certificates."
+  - title: "On general minimax theorems"
+    authors: ["M. Sion"]
+    id: "doi:10.2140/pjm.1958.8.171"
+    type: "paper"
+    location: "Pacific Journal of Mathematics 8 (1958), no. 1, 171-176; not read"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: "Named in the note on PALOMAR-2026-10-01-000004 (its proof route in Mathlib); not used here."
+  - title: "Extensive games and the problem of information"
+    authors: ["H. W. Kuhn"]
+    id: "doi:10.1515/9781400881970-012"
+    type: "paper"
+    location: "In: H. W. Kuhn, A. W. Tucker (eds.), Contributions to the Theory of Games, Volume II, Annals of Mathematics Studies 28, Princeton University Press (1953), 193-216; not read"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: "Behaviour strategies and perfect recall, named in the note on elazarg/GameTheory; the passage between mixed and behaviour strategies here is proved directly for this game."
   - title: "The Lean 4 Theorem Prover and Programming Language"
     authors: ["Leonardo de Moura", "Sebastian Ullrich"]
     id: "doi:10.1007/978-3-030-79876-5_37"
@@ -100,43 +154,46 @@ sources:
     location: "Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020), 367-381"
     relationship: "background"
     author_endorsement: "n/a"
-    note: "The library the development imports (tag v4.35.0-rc2): real arithmetic, Fin, finite sums, matrices and the tactics linarith, nlinarith, linear_combination, positivity and norm_num."
+    note: "The library the development imports (tag v4.35.0-rc2): real arithmetic, Fin, finite sums, matrices and the tactics linarith, linear_combination, positivity and norm_num."
 
 related_formalizations:
   - id: "PALOMAR-2026-10-01-000004"
     relationship: "other"
     note: >-
-      minimax-theorem-lean (Arthur742Ramos, registered 2026-10-01): von Neumann's minimax theorem for every
-      finite two-player zero-sum game, through Mathlib's Sion theorem. It proves that Kuhn poker's 27 x 64
-      normal form has a value; it does not compute it. This entry exhibits the value and both optimal sets
-      directly, by certificates, in behaviour and in mixed strategies, and shares no code with it.
+      minimax-theorem-lean (Arthur742Ramos, registered 2026-10-01): for every finite two-player zero-sum game,
+      the sup-inf and inf-sup of the expected payoff over mixed strategies agree (von Neumann's minimax theorem;
+      its three definitions are comparator holes, which the repository defines so, proving a saddle point
+      through Mathlib's Sion theorem). Its theorem implies that Kuhn poker's 27 x 64 normal form has a value; it
+      does not compute it. This entry exhibits the value and both optimal sets directly, by certificates, in
+      behaviour and in mixed strategies, and shares no code with it.
   - id: "PALOMAR-2026-09-08-000002"
     relationship: "other"
     note: >-
       Verified regret matching and finite-time equilibrium computation (Arthur742Ramos, registered
       2026-09-08): regret bounds and approximate equilibria of finite zero-sum matrix games by self-play; its
-      metadata excludes extensive-form CFR+ and any poker theorem. Kuhn poker is the canonical test game of
-      that line; no exact equilibrium of it is stated there. No code is shared.
-  - id: "https://github.com/elazarg/GameTheory"
+      repository metadata states that no extensive-form or poker performance theorem is claimed. Kuhn poker is
+      a standard test game in that literature; no equilibrium of it is stated there. No code is shared.
+  - id: "https://github.com/elazarg/GameTheory/tree/e33b1317302b3413b2d690862eabbbe067a7d499"
     relationship: "other"
     note: >-
-      A Lean 4 game-theory library (extensive-form games, behaviour strategies, Kuhn's theorem on perfect
-      recall, counterfactual-regret modules; HEAD e33b131 on 2026-10-09, read by tree path and content
-      search). It holds no poker instance and no value of Kuhn poker. No code is shared; this entry builds
+      A Lean 4 game-theory library (extensive-form games, behaviour strategies and perfect recall after Kuhn 1953,
+      counterfactual-regret modules; main at e33b131, 2026-10-09, read by tree path and content search, and
+      re-read 2026-10-10 with no poker path on main or on the branch pushed that day). It holds no poker instance
+      and no value of Kuhn poker. No code is shared; this entry builds
       its game from the tree without a library.
 
 status:
   scope: >-
-    Thirty-one compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
+    Thirty-two compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
     Kuhn's game (a = b = 1): the value -1/18 in both guarantee and equilibrium form, uniqueness of the value,
-    II's unique optimal strategy, I's optimal set as Kuhn's family with the unreached-information-set clause,
-    Kuhn's essential matrix, his twelve and two basic optimal mixed strategies, the value of the normal form,
-    and the exact optimal sets of the normal form in realization-plan and marginal form. For every ante and
-    bet: the value function and guaranteeing strategies in the three regions b <= a, a <= b <= 2a, b >= 2a,
-    with the corrected Case 3 interval for eta; the two certificate identities; the explicit equilibrium set;
-    and the optimal sets at general stakes (I's in every region, II's off the line b = 2a). Not claimed as
+    the two certificate identities, the explicit equilibrium set, II's unique optimal strategy, I's optimal set
+    as Kuhn's family with the unreached-information-set clause, Kuhn's essential matrix, his twelve and two
+    basic optimal mixed strategies, the value of the normal form, and the exact optimal sets of the normal form
+    in realization-plan and marginal form. For every ante and bet: the value function and guaranteeing
+    strategies in the three regions b <= a, a <= b <= 2a, b >= 2a, with the corrected Case 3 interval for eta,
+    and the optimal sets (I's in every region, the diagonal included; II's off the line b = 2a). Not claimed as
     compared theorems: II's optimal set on the line b = 2a; Kuhn's convex-hull form of the optimal polytopes
-    (replayed in the checker: exactly his twelve and two vertices; equivalent on paper to the realization-plan
+    (its vertices replayed by scripts/check_kuhn.py, not stated; equivalent on paper to the realization-plan
     form stated); anything about more than three cards.
     The intentional placeholders of Challenge.lean are excluded from proof counts; Solution.lean does not
     import Challenge.lean.
@@ -264,6 +321,11 @@ status:
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "comparator.json"
+    - declaration: "KuhnPoker.diagonal_I_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
     - declaration: "KuhnPoker.case_three_I_unique"
       file: "Solution.lean"
       sorry_count: 0
@@ -315,9 +377,10 @@ automation:
         Mathlib v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55) are pinned by the committed
         manifest and lake update is never run; there are no GitHub Actions workflows. There is no native_decide
         and no decide +kernel: the proofs unfold the payoff to a polynomial over the reals in the twelve
-        probabilities (and a, b) and close each inequality by linear_combination or nlinarith with the
-        certificate's products as hints, each "only if" by linarith from finitely many pure strategies, and
-        the normal-form statements by an affine bridge from mixed strategies to realization plans and marginals.
+        probabilities (and a, b), close each inequality by linarith with the certificate's nonnegative products
+        supplied as mul_nonneg hints (the identities by ring, one by linear_combination; no nlinarith), each
+        "only if" by linarith from finitely many pure strategies, and the normal-form statements by an affine
+        bridge from mixed strategies to realization plans and marginals.
   spend_usd: "not tracked"
 
 fidelity:
@@ -348,10 +411,12 @@ review:
     No independent human expert review and no source-author endorsement is claimed; AI agents computed the
     certificates, wrote the proofs and audited them in separate passes, the statements were checked against
     Kuhn's paper page by page, and VERIFICATION.md states what is checked and what is not. Mechanical
-    correctness and agreement of formal statements do not establish priority or significance: Kuhn's 1950
-    paper states every result for a = b = 1 and the general-stakes solutions, and this entry is their first
-    kernel check as far as the dated search found (Palomar, formal-conjectures, openai/math, the Lean game
-    theory libraries, GitHub code search in Lean, Isabelle and Coq, 2026-10-09 and 2026-10-10).
+    correctness and agreement of formal statements do not establish priority or significance. Kuhn's 1950
+    paper states the value and the optimal strategies for a = b = 1 and, without proof, the general-stakes
+    solutions; the optimal sets at general stakes, the region b > 2a and the corrections are not in it. No
+    earlier kernel check of these results was found by the dated search (Palomar's feed and day index, Hexagon,
+    formal-conjectures, openai/math, the Lean game theory libraries, the arXiv API, GitHub code search in Lean,
+    Isabelle, Coq and Agda, 2026-10-09 and 2026-10-10); no first is claimed beyond it.
 
 alignment:
   namespace: "KuhnPoker"
@@ -366,7 +431,7 @@ alignment:
       module: "Solution"
       status: "proved"
       note: "If each player can guarantee v and each can guarantee w, then v = w, at every ante and bet."
-    - source: "Kuhn 1950, p. 100 (the optimal strategies form a saddle point)"
+    - source: "Kuhn 1950, p. 100 (the optimal strategies and the value -1/18)"
       lean: "KuhnPoker.exists_isEquilibrium"
       module: "Solution"
       status: "proved"
@@ -381,12 +446,12 @@ alignment:
       module: "Solution"
       status: "proved"
       note: "A pair is an equilibrium iff each strategy guarantees -1/18."
-    - source: "Kuhn 1950, p. 102 ((xi, eta) = (1/3, 1/3)) and p. 99 (the superfluous strategies)"
+    - source: "Kuhn 1950, p. 102 ((xi, eta) = (1/3, 1/3)) and pp. 98-100 (the superfluous strategies)"
       lean: "KuhnPoker.guarantees₂_iff"
       module: "Solution"
       status: "proved"
       note: "II's optimal strategy is unique: bet after a pass with probabilities 1/3, 0, 1 and call with 0, 1/3, 1, the four forced coordinates proved."
-    - source: "Kuhn 1950, p. 101 (alpha = gamma/3, beta = gamma/3 + 1/3, 0 <= gamma <= 1) and p. 99"
+    - source: "Kuhn 1950, p. 101 (alpha = gamma/3, beta = gamma/3 + 1/3, 0 <= gamma <= 1) and pp. 98-100"
       lean: "KuhnPoker.guarantees₁_iff"
       module: "Solution"
       status: "proved"
@@ -440,7 +505,7 @@ alignment:
       lean: "KuhnPoker.guarantees_case_three"
       module: "Solution"
       status: "proved"
-      note: "For a <= b <= 2a, Kuhn's Case 3 strategies guarantee the value, II's for every eta in [(2a - b)/(2a + b), b/(2a + b)]."
+      note: "For a <= b <= 2a, Kuhn's Case 3 strategy for I and his xi for II guarantee the value, with II's eta anywhere in the corrected interval [(2a - b)/(2a + b), b/(2a + b)]."
     - source: "Kuhn 1950, p. 103, Case 4 (b = 2a), and the region b > 2a"
       lean: "KuhnPoker.guarantees_case_four"
       module: "Solution"
@@ -476,6 +541,11 @@ alignment:
       module: "Solution"
       status: "proved"
       note: "For a > 0, II's strategy guarantees kuhnValue a a iff it is (1/3, 0, 1; 0, 1/3, 1)."
+    - source: "Kuhn 1950, p. 101 (the family), at every scale by homogeneity"
+      lean: "KuhnPoker.diagonal_I_iff"
+      module: "Solution"
+      status: "proved"
+      note: "For a > 0, I's strategy guarantees kuhnValue a a iff it is kuhnI alpha k with alpha in [0, 1/3], k in [0, 1] and (3 alpha = 1 or k = 1)."
     - source: "This development (Kuhn 1950, p. 102, Case 3, states one strategy)"
       lean: "KuhnPoker.case_three_I_unique"
       module: "Solution"
@@ -505,8 +575,8 @@ alignment:
       lean: "KuhnPoker.case_four_I_iff"
       module: "Solution"
       status: "proved"
-      note: "For 2a <= b, I's strategy guarantees 0 iff it is valid, never bets first, folds the 1 and the 2, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2."
-    - source: "This development (Kuhn 1950, p. 103, Case 4: 'II can vary his strategy considerably')"
+      note: "For 2a <= b, I's strategy guarantees 0 iff it is valid, never bets the 1 or the 2 first, folds them, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2; at b = 2a this forces σ.1 2 = 0, and for b > 2a the 3 may be bet first with probability at most 1 - 2a/b."
+    - source: "This development (the region b > 2a, which Kuhn does not state; his p. 103 remark that II 'can vary his strategy considerably' concerns b = 2a, where II's set is not characterized here)"
       lean: "KuhnPoker.case_four_II_iff"
       module: "Solution"
       status: "proved"

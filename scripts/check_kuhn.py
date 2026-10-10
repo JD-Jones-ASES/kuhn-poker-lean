@@ -13,8 +13,12 @@ grid of [0, 1/3] with k = 1, and for every k in a grid at 3 alpha = 1; (4) Kuhn'
 (5) the general-stakes witnesses of the Challenge (Cases 1, 3, 4) guarantee kuhnValue(a, b) at rational sample
 stakes in each region and on both boundaries, with eta at both ends and the middle of the corrected Case 3
 interval; (6) Kuhn's printed Case 3 interval fails at its upper end (a = 2, b = 3, eta = 5/7: some pure strategy
-of I earns more than the value). Every check prints its outcome; the last line is VERDICT: PASS or VERDICT: FAIL
-and the exit status is 0 only on PASS. No asserts (python -O strips them)."""
+of I earns more than the value); (7) the vertices of both optimal polytopes of the normal form are exactly Kuhn's twelve and two
+basic strategies: by guaranteesMixed₁_iff / guaranteesMixed₂_iff an optimal mixed strategy is supported on the
+8 essential rows (resp. 4 columns) and satisfies three linear equations there, so its vertices are the
+nonnegative basic solutions of that system, enumerated exactly over every 3-subset of rows (every square
+subsystem) and checked to guarantee -1/18. Every check prints its outcome; the last line is VERDICT: PASS or
+VERDICT: FAIL and the exit status is 0 only on PASS. No asserts (python -O strips them)."""
 
 from fractions import Fraction as F
 from itertools import product
@@ -84,6 +88,39 @@ def kuhn_value(a, b):
     if b <= 2 * a:
         return -b * (2 * a - b) / (6 * (2 * a + b))
     return F(0)
+
+
+def solve_square(rows, rhs):
+    """Exact Gauss-Jordan solve of a square system; None if singular."""
+    n = len(rows)
+    m = [list(r) + [b] for r, b in zip(rows, rhs)]
+    for col in range(n):
+        piv = next((r for r in range(col, n) if m[r][col] != 0), None)
+        if piv is None:
+            return None
+        m[col], m[piv] = m[piv], m[col]
+        inv = 1 / m[col][col]
+        m[col] = [x * inv for x in m[col]]
+        for r in range(n):
+            if r != col and m[r][col] != 0:
+                f = m[r][col]
+                m[r] = [x - f * y for x, y in zip(m[r], m[col])]
+    return [m[r][n] for r in range(n)]
+
+
+def vertices(points, equations, rhs):
+    """The vertices of {p >= 0 on the given points : equations(p) = rhs} (every square subsystem, kept if
+    nonnegative), as frozensets of (point, weight)."""
+    from itertools import combinations
+    out = set()
+    n_eq = len(equations)
+    for support in combinations(range(len(points)), n_eq):
+        rows = [[eq[i] for i in support] for eq in equations]
+        sol = solve_square(rows, rhs)
+        if sol is None or any(x < 0 for x in sol):
+            continue
+        out.add(frozenset((points[i], x) for i, x in zip(support, sol) if x != 0))
+    return out
 
 
 def main():
@@ -185,6 +222,27 @@ def main():
           not guarantees2(a, b, ([b / d, F(0), F(1)], [F(0), b / d + F(1, 100), F(1)]), kuhn_value(a, b)))
     check("just below the corrected lower end fails (eta = (2a - b)/(2a + b) - 1/100)",
           not guarantees2(a, b, ([b / d, F(0), F(1)], [F(0), (2 * a - b) / d - F(1, 100), F(1)]), kuhn_value(a, b)))
+    # (7) the vertices of the optimal polytopes
+    ess_rows = rows
+    eq1 = [[F(1)] * 8,
+           [F(1) if x[2] == 2 else F(0) for x in ess_rows],
+           [F(1) if x[1] == 1 else F(0) for x in ess_rows]]
+    eq1[1] = [eq1[1][i] - 3 * (1 if ess_rows[i][0] == 2 else 0) for i in range(8)]   # P(x3 = 2) - 3 P(x1 = 2) = 0
+    eq1[2] = [eq1[2][i] - (1 if ess_rows[i][0] == 2 else 0) for i in range(8)]       # P(x2 = 1) - P(x1 = 2) = 1/3
+    v1 = vertices(ess_rows, eq1, [F(1), F(0), F(1, 3)])
+    kuhn1 = {frozenset(p.items()) for p in basic1}
+    check("(7) I's optimal polytope has exactly Kuhn's twelve vertices (A)-(L)", v1 == kuhn1, f"{len(v1)} vertices found")
+    check("(7) every vertex of I's polytope guarantees -1/18 against all 64 columns",
+          all(all(sum(w * payoff(one, one, pure1(x), pure2(y)) for x, w in v) >= V for y in PURE2) for v in v1))
+    ess_cols = cols
+    eq2 = [[F(1)] * 4,
+           [F(1) if y[0] >= 2 else F(0) for y in ess_cols],      # P(y1 bets after a pass) = 1/3
+           [F(1) if y[1] in (1, 3) else F(0) for y in ess_cols]]  # P(y2 calls) = 1/3
+    v2 = vertices(ess_cols, eq2, [F(1), F(1, 3), F(1, 3)])
+    kuhn2 = {frozenset(q.items()) for q in basic2}
+    check("(7) II's optimal polytope has exactly Kuhn's two vertices", v2 == kuhn2, f"{len(v2)} vertices found")
+    check("(7) every vertex of II's polytope holds all 27 rows to -1/18",
+          all(all(sum(w * payoff(one, one, pure1(x), pure2(y)) for y, w in v) <= V for x in PURE1) for v in v2))
     print(f"{len(failures)} failures")
     print("VERDICT: " + ("PASS" if not failures else "FAIL"))
     sys.exit(0 if not failures else 1)

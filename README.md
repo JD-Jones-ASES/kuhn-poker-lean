@@ -1,4 +1,4 @@
-# Kuhn poker: the value −1/18, the optimal sets, and the value and optimal sets at every ante and bet
+# Kuhn poker: the value −1/18, the optimal sets, and the value and optimal sets at every ante and bet (II's except on the line b = 2a)
 
 Kuhn's simplified two-person poker (H. W. Kuhn, *A simplified two-person poker*, Contributions to the Theory of
 Games I, Ann. of Math. Studies 24 (1950) 97–103): three cards `1 < 2 < 3`, one dealt to each player, an ante of
@@ -10,7 +10,7 @@ card, I's probability of betting first and of calling after passing, and II's pr
 pass and of calling a bet.
 
 [Challenge.lean](Challenge.lean) builds the game from this tree (thirty-one definitions, namespace `KuhnPoker`)
-and states thirty-one theorems; [Solution.lean](Solution.lean) proves them, kernel-only; the table in
+and states thirty-two theorems; [Solution.lean](Solution.lean) proves them, kernel-only; the table in
 [VERIFICATION.md](VERIFICATION.md) names each one. For Kuhn's game:
 
 - the value is `−1/18`: each player has a strategy guaranteeing it, a game has at most one value, an
@@ -25,8 +25,8 @@ and states thirty-one theorems; [Solution.lean](Solution.lean) proves them, kern
   `α ∈ [0, 1/3]`, the call with the `3` unconstrained exactly when `3α = 1` (`guarantees₁_iff`); so the
   equilibria are exactly the pairs of such a strategy with II's (`isEquilibrium_iff_explicit`);
 - the two certificates are stated as identities (`upper_certificate`, `lower_certificate`): `−1/18` minus the
-  payoff against II's strategy is three nonnegative products, and the payoff of the family plus `1/18` is four
-  nonnegative products minus a tail carrying the factor `(1 − 3α)(1 − k)`;
+  payoff against II's strategy is three products, nonnegative on valid strategies, and the payoff of the family plus
+  `1/18` is four such products minus a tail carrying the factor `(1 − 3α)(1 − k)`;
 - the normal form, with Kuhn's coding of the `27` and `64` pure strategies: his essential `8 × 4` matrix is six
   times the game matrix (`essentialMatrix_eq`), his twelve basic optimal mixed strategies (A)–(L) and II's two
   guarantee `−1/18` (`basic₁_guarantees`, `basic₂_guarantees`, `hasMixedValue`), and a mixed strategy is
@@ -35,26 +35,34 @@ and states thirty-one theorems; [Solution.lean](Solution.lean) proves them, kern
 
 For every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there without proof, and the region `b > 2a`
 he does not state): the value is `−b²/(6(2a + b))` for `b ≤ a`, `−b(2a − b)/(6(2a + b))` for `a ≤ b ≤ 2a` and
-`0` for `b ≥ 2a` (`hasValue_general`, `kuhnValue_one_one`), with Kuhn's strategies guaranteeing it in each case
-(`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`); and the optimal sets, which Kuhn does
-not give: I's strategy is unique off the diagonal `b = a` — for `b < a` up to the unreached call with the `3`
-(`case_one_I_unique`), for `a < b ≤ 2a` outright (`case_three_I_unique`), for `b ≥ 2a` a polytope of one
-inequality (`case_four_I_iff`) — so his one-parameter family exists only at `b = a`; II's strategy is unique on
-the diagonal at every scale (`diagonal_II_unique`), a segment for `b ≤ a` (`case_one_II_iff`), a polytope of
-three inequalities for `a ≤ b < 2a` (`case_three_II_set`) and of one inequality for `b > 2a`
-(`case_four_II_iff`); the line `b = 2a` is left open for II.
+`0` for `b ≥ 2a` (`hasValue_general`, `kuhnValue_one_one`), with explicit guaranteeing strategies in each case —
+Kuhn's for `b ≤ 2a`, II's Case 3 call taken from the corrected interval, and his `b = 2a` strategies for every
+`b ≥ 2a` (`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`); and the full optimal sets, which
+Kuhn gives only in his reduced parameters: I's strategy is unique for `b < a` up to the unreached call with the `3`
+(`case_one_I_unique`) and for `a < b ≤ 2a` outright (`case_three_I_unique`); on the diagonal `b = a` it is Kuhn's
+family at every scale (`diagonal_I_iff`); for `b ≥ 2a` it is cut out by one inequality (`case_four_I_iff`), a
+single strategy at `b = 2a` and beyond it a two-dimensional set in which I may also bet the `3` first, with
+probability at most `(b − 2a)/b` (a triangle in realization-plan coordinates); so Kuhn's bluffing family belongs
+to `b = a` alone. II's strategy is unique on the diagonal at every scale (`diagonal_II_unique`), a segment for
+`b ≤ a` (`case_one_II_iff`), a polytope of three inequalities for `a ≤ b < 2a` (`case_three_II_set`) and of one
+inequality for `b > 2a` (`case_four_II_iff`); the line `b = 2a` is left open for II.
 
-Three corrections to the printed text. In Case 3 the calling probability `η` with the `2` ranges exactly over
-`[(2a − b)/(2a + b), b/(2a + b)]` (`case_three_II_iff`), and the interval printed on p. 102,
+Two corrections to the printed text and one scope note. In Case 3 the calling probability `η` with the `2`
+ranges exactly over `[(2a − b)/(2a + b), b/(2a + b)]` (`case_three_II_iff`), and the interval printed on p. 102,
 `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)`, holds only at its lower end (`case_three_printed_interval`; at
-`a = 2, b = 3`, `η = 5/7` lets I gain, `case_three_printed_upper_end_fails`). Case 1's "both players have a unique
-optimal mode of behavior" holds for the reduced parameters only (II may bet the `2` after a pass with any
-probability in `[0, 2(a − b)/(2a + b)]`). And p. 101's table gives `β = 5/12` for the basic strategies (I) and
-(J), where p. 100's mixtures and p. 101's own formula give `7/12` (not a theorem here; the checker's plan table).
+`a = 2, b = 3`, `η = 5/7` lets I gain, `case_three_printed_upper_end_fails`). p. 101's table gives `β = 5/12` for
+the basic strategies (I) and (J), where p. 100's mixtures and p. 101's own formula give `7/12` (not a theorem
+here; the replay checks that the twelve plans lie on the segment, which gives `β = α + 1/3 = 7/12`). And Case 1's
+"both players have a unique optimal mode of behavior" is true in his behaviour parameters, the terms in which he
+states the solutions; in the full game II may also bet the `2` after a pass with any probability in
+`[0, 2(a − b)/(2a + b)]` (`case_one_II_iff`).
 
-Every inequality is a finite nonnegative-product identity — the target minus the payoff is a sum of nonnegative
-rational multiples of products of probabilities and their complements, with the case factors `a − b`, `2a − b`,
-`b − 2a` at general stakes — and every "only if" is a linear certificate from finitely many pure strategies.
-`scripts/check_kuhn.py` replays the finite facts in the standard library; `python scripts/verify.py` runs every
-local check and ends with `VERIFY: PASS`. No library holds the game; nothing is derived from another project.
+Every guarantee is a finite nonnegative-product identity: the gap between the payoff and the value is a sum of
+products of the opponent's probabilities and their complements with nonnegative coefficients (rationals at
+`a = b = 1`; at general stakes polynomials built from `a`, `b`, `2a + b`, `a − b`, `2a − b`, `4a − b`, `b − 2a` and
+the interval factors `(2a + b)η − (2a − b)`, `b − (2a + b)η`, `2(a − b) − (2a + b)ξ`), and every "only if" is a
+linear certificate from finitely many pure strategies. `scripts/check_kuhn.py` replays the finite facts in the
+standard library, Kuhn's twelve and two vertices included; `python scripts/verify.py` runs every local check and
+ends with `VERIFY: PASS`. No formal library found by the dated search (2026-10-10) holds the game; nothing is
+derived from another project.
 Lean v4.35.0-rc2, Mathlib v4.35.0-rc2; MIT ([LICENSE](LICENSE)); AI assistance in [DISCLOSURE.md](DISCLOSURE.md).

@@ -26,6 +26,7 @@
     "KuhnPoker.case_one_I_unique",
     "KuhnPoker.case_one_II_iff",
     "KuhnPoker.diagonal_II_unique",
+    "KuhnPoker.diagonal_I_iff",
     "KuhnPoker.case_three_I_unique",
     "KuhnPoker.case_three_II_iff",
     "KuhnPoker.case_three_II_set",

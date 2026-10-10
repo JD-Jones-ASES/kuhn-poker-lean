@@ -29,7 +29,7 @@ def main():
     sol_text = (ROOT / "Solution.lean").read_text(encoding="utf-8")
     sol = headers(sol_text)
     ok = True
-    if re.search(r"^\s*(public\s+)?import\s+Challenge\b", sol_text, flags=re.M):
+    if re.search(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?Challenge\b", sol_text, flags=re.M):
         print("Solution.lean imports Challenge")
         ok = False
     if not chal:

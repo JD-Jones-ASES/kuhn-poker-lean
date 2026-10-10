@@ -1,7 +1,7 @@
 module
--- Palomar's core-notation audit, an unmodified copy of scripts/core_notation_audit.lean of
--- https://github.com/PalomarRegistry/PalomarSubmission (main, fetched 2026-10-07 UTC); see that
--- repository for its licence. Used only to check the statement surface locally.
+-- Palomar's core-notation audit, a copy of scripts/core_notation_audit.lean of
+-- https://github.com/PalomarRegistry/PalomarSubmission (main, fetched 2026-10-07 UTC), unmodified apart
+-- from these three comment lines; see that repository for its licence. Used only to check the statement surface locally.
 
 import Lean
 import Lean.Util.FoldConsts

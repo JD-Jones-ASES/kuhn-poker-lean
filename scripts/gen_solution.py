@@ -63,9 +63,9 @@ def explicit_names(header):
 
 out = [HEADER]
 names = []
-pattern = re.compile(r"(/--.*?-/\n)?theorem (\w+)(.*?):=\s*sorry", re.S)
+pattern = re.compile(r"^theorem (\w+)(.*?):=\s*sorry", re.S | re.M)  # the keyword at a line start only
 for m in pattern.finditer(src):
-    doc, name, rest = m.group(1) or "", m.group(2), m.group(3)
+    name, rest = m.group(1), m.group(2)
     # rest = binders and statement, ending just before ':='
     # the statement starts after the last top-level binder; we keep the whole rest verbatim
     # binders precede the first top-level ':' (the statement colon)

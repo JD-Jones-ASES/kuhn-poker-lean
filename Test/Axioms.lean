@@ -32,8 +32,8 @@ run_cmd do
         unless allowed.contains ax do
           rejected := rejected + 1
           logError m!"Unexpected axiom dependency: {name} -> {ax}"
-  unless checked ≥ 40 do
-    logError m!"Axiom audit matched only {checked} project constants; expected at least 40"
+  unless checked ≥ 170 do
+    logError m!"Axiom audit matched only {checked} project constants; expected at least 170"
   for n in [`KuhnPoker.hasValue_one_one, `KuhnPoker.hasValue_unique,
       `KuhnPoker.exists_isEquilibrium, `KuhnPoker.payoff_of_isEquilibrium,
       `KuhnPoker.isEquilibrium_iff, `KuhnPoker.guarantees₂_iff, `KuhnPoker.guarantees₁_iff,
@@ -44,7 +44,7 @@ run_cmd do
       `KuhnPoker.guarantees_case_three, `KuhnPoker.guarantees_case_four,
       `KuhnPoker.upper_certificate, `KuhnPoker.lower_certificate,
       `KuhnPoker.isEquilibrium_iff_explicit, `KuhnPoker.case_one_I_unique,
-      `KuhnPoker.case_one_II_iff, `KuhnPoker.diagonal_II_unique,
+      `KuhnPoker.case_one_II_iff, `KuhnPoker.diagonal_II_unique, `KuhnPoker.diagonal_I_iff,
       `KuhnPoker.case_three_I_unique, `KuhnPoker.case_three_II_iff,
       `KuhnPoker.case_three_II_set, `KuhnPoker.case_three_printed_interval,
       `KuhnPoker.case_three_printed_upper_end_fails, `KuhnPoker.case_four_I_iff,

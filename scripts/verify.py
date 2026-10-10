@@ -10,8 +10,9 @@ scripts/check_kuhn.py (every construction), the metadata (formalization.yaml par
 its title length, main results and alignment against comparator.json; no definition holes; no
 original-proof source), the Lean build of every target (including the Test audit, which fails on
 any axiom beyond propext, Classical.choice and Quot.sound), the module-resolution check, the
-elaboration check of the compared definitions (printed with pp.all from the Challenge and from
-KuhnPoker.Defs, which must agree exactly, as the registry's comparator demands), and Palomar's
+elaboration checks of the compared definitions (printed with pp.all from the Challenge and from
+KuhnPoker.Defs) and of the compared theorems' types (from the Challenge and from the Solution), which must
+agree exactly as the registry's comparator demands, and Palomar's
 core-notation audit of the compared declarations. The compared definitions are read from
 Challenge.lean at run time: every `def`, `noncomputable def` and `abbrev` at the start of a line, in namespace
 KuhnPoker. `--fetch-cache` runs
@@ -167,6 +168,27 @@ def check_definition_elaboration(names):
                 ok, "identical" if ok else "the printed terms differ or a print failed")
 
 
+def check_theorem_elaboration():
+    """The compared theorems, printed (#check with pp.all) from the Challenge and from the Solution, must agree
+    exactly: the text comparison of the headers is not enough, the comparator judges the elaborated types."""
+    config = json.loads((ROOT / "comparator.json").read_text(encoding="utf-8"))
+    theorems = config["theorem_names"]
+    scratch = ROOT / ".scratch"
+    scratch.mkdir(exist_ok=True)
+    outputs = []
+    for module in (config["challenge_module"], config["solution_module"]):
+        path = scratch / f"verify_check_{module}.lean"
+        header = "import " + module + "\nset_option pp.all true\n"
+        path.write_text(header + "".join("#check @" + n + "\n" for n in theorems), encoding="utf-8")
+        result = run(["lake", "env", "lean", str(path)], capture_output=True)
+        outputs.append((result.returncode, result.stdout))
+        path.unlink()
+    ok = all(rc == 0 for rc, _ in outputs) and outputs[0][1].strip() != "" and \
+        outputs[0][1] == outputs[1][1] and outputs[0][1].count("\n") >= len(theorems)
+    return step(f"theorem elaboration (Challenge vs Solution, pp.all, {len(theorems)} names)",
+                ok, "identical" if ok else "the printed types differ or a check failed")
+
+
 def check_notation_audit(names):
     config = json.loads((ROOT / "comparator.json").read_text(encoding="utf-8"))
     args = ["lake", "env", "lean", "--run", "scripts/core_notation_audit.lean",
@@ -205,6 +227,7 @@ def main():
         ok &= check_build()
         ok &= check_module_resolution()
         ok &= check_definition_elaboration(names)
+        ok &= check_theorem_elaboration()
         ok &= check_notation_audit(names)
     else:
         print("[SKIP] Lean build and axiom audit; module resolution; definition elaboration; "

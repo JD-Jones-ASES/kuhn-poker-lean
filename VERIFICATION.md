@@ -1,6 +1,6 @@
 # Verification
 
-All thirty-one statements of Challenge.lean have proofs. The local build, the axiom audit, the source guard, the
+All thirty-two statements of Challenge.lean have proofs. The local build, the axiom audit, the source guard, the
 definition and statement checks, the standard-library replay of the finite facts behind the compared statements,
 the metadata check, the module-resolution check, the elaboration check and Palomar's core-notation audit of the
 statements pass; `python scripts/verify.py` runs them all and ends with `VERIFY: PASS`. The checks below were last
@@ -38,36 +38,44 @@ the Solution's values against them.
 | 22 | `case_one_I_unique` — b < a: I's optimal strategy is unique up to the unreached call with the 3 | KuhnPoker/General.lean |
 | 23 | `case_one_II_iff` — b ≤ a: II's optimal strategies are Kuhn's with the bet with the 2 after a pass free in [0, 2(a − b)/(2a + b)] | KuhnPoker/General.lean |
 | 24 | `diagonal_II_unique` — a = b: II's optimal strategy is unique at every scale | KuhnPoker/General.lean |
-| 25 | `case_three_I_unique` — a < b ≤ 2a: I's optimal strategy is unique | KuhnPoker/General.lean |
-| 26 | `case_three_II_iff` — a ≤ b ≤ 2a: with the other coordinates pinned, η guarantees the value iff (2a − b)/(2a + b) ≤ η ≤ b/(2a + b) | KuhnPoker/General.lean |
-| 27 | `case_three_II_set` — a ≤ b < 2a: II's optimal strategies exactly (bets forced; calls a polytope of three inequalities) | KuhnPoker/General.lean |
-| 28 | `case_three_printed_interval` — on Kuhn's printed interval, II's strategy guarantees the value iff η = b/(2a + b) | KuhnPoker/General.lean |
-| 29 | `case_three_printed_upper_end_fails` — at a = 2, b = 3, the printed upper end η = 5/7 fails | KuhnPoker/General.lean |
-| 30 | `case_four_I_iff` — 2a ≤ b: I's optimal strategies exactly | KuhnPoker/General.lean |
-| 31 | `case_four_II_iff` — 2a < b: II's optimal strategies exactly | KuhnPoker/General.lean |
+| 25 | `diagonal_I_iff` — a = b: I's optimal strategies are Kuhn's family at every scale | KuhnPoker/General.lean |
+| 26 | `case_three_I_unique` — a < b ≤ 2a: I's optimal strategy is unique | KuhnPoker/General.lean |
+| 27 | `case_three_II_iff` — a ≤ b ≤ 2a: with the other coordinates pinned, η guarantees the value iff (2a − b)/(2a + b) ≤ η ≤ b/(2a + b) | KuhnPoker/General.lean |
+| 28 | `case_three_II_set` — a ≤ b < 2a: II's optimal strategies exactly (bets forced; calls a polytope of three inequalities) | KuhnPoker/General.lean |
+| 29 | `case_three_printed_interval` — on Kuhn's printed interval, II's strategy guarantees the value iff η = b/(2a + b) | KuhnPoker/General.lean |
+| 30 | `case_three_printed_upper_end_fails` — at a = 2, b = 3, the printed upper end η = 5/7 fails | KuhnPoker/General.lean |
+| 31 | `case_four_I_iff` — 2a ≤ b: I's optimal strategies exactly | KuhnPoker/General.lean |
+| 32 | `case_four_II_iff` — 2a < b: II's optimal strategies exactly | KuhnPoker/General.lean |
 
 ## What is checked
 
 - **Build** — `lake build KuhnPoker`, `lake build Challenge`, `lake build Solution`, `lake build Test` on the pinned
   toolchain and Mathlib (`lean-toolchain`, `lake-manifest.json`; `lake update` is never run).
-- **Axioms** — `Test/Axioms.lean` walks every constant in `KuhnPoker.*` (and the private auxiliaries the module
-  system generates) and fails the build on any axiom beyond `propext`, `Classical.choice`, `Quot.sound`; it also
-  fails if any compared theorem is missing from the environment.
+- **Axioms** — `Test/Axioms.lean` walks every public constant in `KuhnPoker.*` (private auxiliaries are not
+  enumerated under the module system, but `collectAxioms` reaches every private constant a public proof uses) and
+  fails the build on any axiom beyond `propext`, `Classical.choice`, `Quot.sound`; it also fails if fewer than 170
+  constants are matched or any compared theorem is missing from the environment.
 - **Source guard** — `scripts/check-source.py` rejects `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`,
-  `partial`, `implemented_by`, `extern`, `opaque`, `mutual`, `ofReduceBool` and the kernel-bypass options outside
-  comments and strings in `KuhnPoker/`, `Solution.lean` and `Test/` (Challenge.lean's intentional `sorry`
-  placeholders excepted).
+  `partial`, `implemented_by`, `extern`, `opaque`, `mutual`, `ofReduceBool`, `set_option` and every `debug.` option
+  outside comments and strings in `KuhnPoker/`, `Solution.lean` and `Test/` (Challenge.lean's intentional `sorry`
+  placeholders excepted), and any `leanOptions`, `moreLeanArgs`, `weakLeanArgs` or `-D` in `lakefile.toml`.
 - **Definitions and statements** — `scripts/check_definitions.py` compares every definition block of Challenge.lean
   with `KuhnPoker/Defs.lean` character for character; `scripts/check_statements.py` compares every theorem header
-  of Challenge.lean with Solution.lean; `scripts/verify.py` prints every compared definition with `pp.all` from both
-  modules and requires identical output, and runs Palomar's core-notation audit on every compared declaration.
+  of Challenge.lean with Solution.lean; `scripts/verify.py` prints every compared definition, and the type of every compared theorem, with
+  `pp.all` from both modules and requires identical output, and runs Palomar's core-notation audit on every
+  compared declaration.
 - **Replay** — `scripts/check_kuhn.py` rebuilds the game from the five courses in the standard library, exactly,
-  and checks the essential matrix, both optimal sets at a = b = 1 (II's six pins; the family on a grid, with the
-  call-with-3 clause), the fourteen basic strategies and their plans, the general-stakes witnesses at sample stakes
-  in every region and on both boundaries, and the refutation of the printed Case 3 interval.
+  and checks the essential matrix; II's strategy at a = b = 1 (its guarantee against all 27 pure strategies of I,
+  tight exactly on the 8 essential rows, and the failure of every single-coordinate move by ±1/10); I's family on a
+  grid with the call-with-3 clause; the fourteen basic strategies and their plans; the vertices of both optimal
+  polytopes of the normal form (an exact enumeration over the essential rows and columns, to which the
+  realization-plan and marginal forms confine the support: exactly Kuhn's twelve and two); the general-stakes
+  witnesses at sample stakes in every region and on both boundaries; and the refutation of the printed Case 3
+  interval.
 
 ## What is not checked here
 
 The statements' faithfulness to Kuhn's paper is argued in `formalization.yaml` (fidelity) and PROOF.md, not
-checked mechanically. II's optimal set on the line b = 2a, Kuhn's convex-hull form of the optimal polytopes (replayed in the checker:
-exactly his twelve and two vertices) and the n-card game are outside the formal scope.
+checked mechanically. II's optimal set on the line b = 2a, Kuhn's convex-hull form of the optimal polytopes (its vertices replayed by
+`scripts/check_kuhn.py`, not stated as a theorem; on paper equivalent to the realization-plan form proved) and the
+n-card game are outside the formal scope.

@@ -114,6 +114,11 @@ theorem diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
     Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) :=
   diagonal_II_unique_internal a ha τ
 
+theorem diagonal_I_iff (a : ℝ) (ha : 0 < a) (σ : Strategy₁) :
+    Guarantees₁ a a σ (kuhnValue a a) ↔
+      ∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k :=
+  diagonal_I_iff_internal a ha σ
+
 theorem case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
     (σ : Strategy₁) :
     Guarantees₁ a b σ (kuhnValue a b) ↔ σ = (![0, 0, 0], ![0, (2 * a - b) / (2 * a + b), 1]) :=

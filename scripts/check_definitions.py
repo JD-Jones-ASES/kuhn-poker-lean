@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that every definition of Challenge.lean (each `def`, `noncomputable def` and `inductive` block,
+"""Check that every definition of Challenge.lean (each `def`, `noncomputable def`, `abbrev` and `inductive` block,
 from its first line to the blank line after it) appears character for character in KuhnPoker/Defs.lean, and
 that the two files have the same import. The registry's comparator judges the elaborated constants,
 which depend on the imports through instance resolution; `scripts/verify.py` also prints every

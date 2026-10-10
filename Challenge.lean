@@ -36,7 +36,8 @@ file states, and `Solution.lean` proves (kernel-only), for Kuhn's game `a = b = 
   mixed strategies (A)–(L) for I and two for II (p. 100) guarantee `−1/18` (`basic₁_guarantees`,
   `basic₂_guarantees`, `hasMixedValue`); and a mixed strategy is optimal iff its realization plan lies on the
   segment above (I) or its marginals are II's unique strategy (II) (`guaranteesMixed₁_iff`,
-  `guaranteesMixed₂_iff`) — the polytope whose twelve vertices Kuhn lists;
+  `guaranteesMixed₂_iff`); Kuhn's form of these sets, the convex hulls of his twelve and two strategies, is
+  replayed in `scripts/check_kuhn.py` and is not a theorem here;
 
 and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "without proof", and the region
 `b > 2a` he does not state):
@@ -45,12 +46,19 @@ and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "
   (`hasValue_general`, `kuhnValue_one_one`), with explicit guaranteeing strategies in each case
   (`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`). In Case 3 the calling probability
   `η` with the `2` ranges over `[(2a − b)/(2a + b), b/(2a + b)]`; the interval printed on p. 102,
-  `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)`, fails its upper end (at `a = 2, b = 3`, `η = 5/7` lets I gain).
+  `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)`, holds only at its lower end (at `a = 2, b = 3`, `η = 5/7` lets I gain);
+* beyond Kuhn: the two certificate identities (`upper_certificate`, `lower_certificate`); the equilibria explicitly
+  (`isEquilibrium_iff_explicit`); the exact optimal sets at every ante and bet — I's in every region (`case_one_I_unique`,
+  `diagonal_I_iff`, `case_three_I_unique`, `case_four_I_iff`) and II's off the line `b = 2a` (`case_one_II_iff`,
+  `diagonal_II_unique`, `case_three_II_set`, `case_four_II_iff`); the corrected Case 3 interval is sharp and the printed
+  one holds only at its lower end (`case_three_II_iff`, `case_three_printed_interval`,
+  `case_three_printed_upper_end_fails`).
 
-The definitions are built from the game tree; no library holds the game. All proofs are over `ℝ` with the
-probabilities as real variables; the inequalities are finite nonnegative-product identities (each side of the
-value is the target plus a sum of nonnegative rational multiples of products of probabilities and their
-complements), and the "only if" directions are linear certificates from finitely many pure strategies.
+The definitions are built from the game tree; no imported library holds the game. All proofs are over `ℝ` with the
+probabilities as real variables; every guarantee is a finite nonnegative-product identity (the gap between the
+value and the payoff is a sum of products of probabilities, their complements and case factors, with coefficients
+nonnegative on the case's region: rational constants at `a = b = 1`, polynomials in `a`, `b` and the free parameter
+at general stakes), and the "only if" directions are linear certificates from finitely many pure strategies.
 -/
 
 @[expose] public section
@@ -287,12 +295,12 @@ theorem guarantees_case_four (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a 
 
 /-! ### The certificates, the equilibrium set, and the optimal sets at every ante and bet -/
 
-/-- The upper-bound certificate, as an identity for every strategy of I (valid or not): `−1/18` minus the payoff against `kuhnII` is a sum of three nonnegative products, so `kuhnII` holds every valid strategy to at most `−1/18`. -/
+/-- The upper-bound certificate, as an identity for every strategy of I (valid or not): `−1/18` minus the payoff against `kuhnII` is a sum of three products, nonnegative whenever `σ` is valid, so `kuhnII` holds every valid strategy to at most `−1/18`. -/
 theorem upper_certificate (σ : Strategy₁) :
     -1 / 18 - payoff 1 1 σ kuhnII =
       (1 - σ.1 0) * σ.2 0 / 6 + σ.1 1 / 18 + (1 - σ.1 2) * (1 - σ.2 2) / 6 := sorry
 
-/-- The lower-bound certificate, as an identity for every `α`, `k` and every strategy of II (valid or not): the payoff of `kuhnI α k` plus `1/18` is four nonnegative products minus a tail carrying the factor `(1 − 3α)(1 − k)`; the tail vanishes exactly under the clause of `guarantees₁_iff`. -/
+/-- The lower-bound certificate, as an identity for every `α`, `k` and every strategy of II (valid or not): the payoff of `kuhnI α k` plus `1/18` is four products, nonnegative for `α ∈ [0, 1/3]` and valid `τ`, minus a tail carrying the factor `(1 − 3α)(1 − k)`; the tail vanishes exactly under the clause of `guarantees₁_iff`. -/
 theorem lower_certificate (α k : ℝ) (τ : Strategy₂) :
     payoff 1 1 (kuhnI α k) τ + 1 / 18 =
       α / 2 * τ.2 0 + α / 2 * (1 - τ.2 2) + (1 / 3 - α) / 2 * τ.1 1 + (1 / 18 + α / 6) * (1 - τ.1 2)
@@ -318,6 +326,12 @@ theorem case_one_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b ≤ a) (�
 /-- On the diagonal `a = b` (Kuhn's game at every scale), II's optimal strategy is unique. -/
 theorem diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
     Guarantees₂ a a τ (kuhnValue a a) ↔ τ = (![1 / 3, 0, 1], ![0, 1 / 3, 1]) := sorry
+
+/-- On the diagonal `a = b` (Kuhn's game at every scale), I's optimal strategies are Kuhn's family, with the
+unreached-set clause of `guarantees₁_iff`. -/
+theorem diagonal_I_iff (a : ℝ) (ha : 0 < a) (σ : Strategy₁) :
+    Guarantees₁ a a σ (kuhnValue a a) ↔
+      ∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k := sorry
 
 /-- Case 3 off the diagonal, `a < b ≤ 2a`: I's optimal strategy is unique. -/
 theorem case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) (hb2 : b ≤ 2 * a)
@@ -345,7 +359,7 @@ theorem case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab :
 theorem case_three_printed_upper_end_fails :
     ¬ Guarantees₂ 2 3 (![3 / (2 * 2 + 3), 0, 1], ![0, 5 / 7, 1]) (kuhnValue 2 3) := sorry
 
-/-- Case 4, `2a ≤ b`: I's optimal strategies exactly — never bet first, fold the `1` and the `2`, and call with the `3` often enough that `4a ≤ 2a·σ.1 2 + (2a + b)(1 − σ.1 2)σ.2 2`. -/
+/-- Case 4, `2a ≤ b`: I's optimal strategies exactly — never bet the `1` or the `2` first, fold them, and with the `3` bet first or pass and call with enough weight that `4a ≤ 2a·σ.1 2 + (2a + b)(1 − σ.1 2)σ.2 2` (at `b = 2a` this forces `σ.1 2 = 0`; for `b > 2a` the `3` may be bet first with probability up to `1 − 2a/b`). -/
 theorem case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
     Guarantees₁ a b σ 0 ↔ σ.IsValid ∧ σ.1 0 = 0 ∧ σ.1 1 = 0 ∧ σ.2 0 = 0 ∧ σ.2 1 = 0 ∧
       4 * a ≤ 2 * a * σ.1 2 + (2 * a + b) * ((1 - σ.1 2) * σ.2 2) := sorry

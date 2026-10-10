@@ -2,10 +2,10 @@
 """Reject proof placeholders and prohibited declarations in KuhnPoker, Solution and Test.
 
 Rejected outside comments and strings: sorry, sorryAx, admit, axiom, unsafe, partial,
-native_decide, implemented_by, extern, ofReduceBool (qualified or not), and the kernel-bypass
-options debug.skipKernelTC and debug.byAsSorry. Challenge.lean carries the submitted statements
-with intentional sorry placeholders, so it is checked for every token except sorry. The
-[leanOptions] table of lakefile.toml, if present, may not set any debug. option. The compiled
+native_decide, implemented_by, extern, mutual, opaque, csimp, ofReduceNat, ofReduceBool (qualified or not), set_option, and
+every debug. option. Challenge.lean carries the submitted statements
+with intentional sorry placeholders, so it is checked for every token except sorry. lakefile.toml may
+set no debug. option and no leanOptions, moreLeanArgs, weakLeanArgs or -D argument. The compiled
 Test.Axioms module is a separate check.
 """
 
@@ -15,11 +15,11 @@ import sys
 
 FORBIDDEN = re.compile(
     r"\b(?:sorry|sorryAx|admit|axiom|unsafe|partial|native_decide|implemented_by|extern|mutual|opaque|csimp|ofReduceNat)\b"
-    r"|\b(?:Lean\.)?ofReduceBool\b|\bdebug\.skipKernelTC\b|\bdebug\.byAsSorry\b")
+    r"|\b(?:Lean\.)?ofReduceBool\b|\bset_option\b|\bdebug\.\w+")
 CHALLENGE_FORBIDDEN = re.compile(
     r"\b(?:sorryAx|admit|axiom|unsafe|partial|native_decide|implemented_by|extern|mutual|opaque|csimp|ofReduceNat)\b"
-    r"|\b(?:Lean\.)?ofReduceBool\b|\bdebug\.skipKernelTC\b|\bdebug\.byAsSorry\b")
-LAKEFILE_DEBUG = re.compile(r"^\s*debug\.")
+    r"|\b(?:Lean\.)?ofReduceBool\b|\bset_option\b|\bdebug\.\w+")
+LAKEFILE_DEBUG = re.compile(r"debug\.|-D|(?:moreLeanArgs|weakLeanArgs|leanOptions)")
 
 
 def code_without_comments_or_strings(source):
@@ -119,13 +119,10 @@ def main():
         print(f"lakefile.toml: {error}", file=sys.stderr)
         failures += 1
     else:
-        section = None
         for number, text in enumerate(options.splitlines(), 1):
             stripped = text.strip()
-            if stripped.startswith("["):
-                section = stripped
-            elif section == "[leanOptions]" and LAKEFILE_DEBUG.match(text):
-                print(f"lakefile.toml:{number}: prohibited option {stripped}", file=sys.stderr)
+            if LAKEFILE_DEBUG.search(text):
+                print(f"lakefile.toml:{number}: prohibited option or argument {stripped}", file=sys.stderr)
                 failures += 1
     if failures:
         return 1

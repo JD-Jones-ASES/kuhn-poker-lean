@@ -10,9 +10,9 @@ first and `σ.2 c` of calling after passing; a strategy of II is `τ = (betAfter
 `payoff_eq_sum`: `payoff a b σ τ` is the sum of the six `dealPayoff`s over the deals of distinct cards, divided
 by six (`simp only [payoff, Fin.sum_univ_three]` with the `Fin` equalities reduced, then `ring`). After
 `simp only [dealPayoff, toHigher]` with the `Fin 3` comparisons decided (`Fin.reduceLT`, `↓reduceIte`), the payoff
-is an explicit polynomial in the twelve probabilities, `a` and `b`; `co_payoff_poly` records it at `a = b = 1`.
+is an explicit polynomial in the twelve probabilities, `a` and `b`; `co_payoff_poly` states it at `a = b = 1`.
 Every inequality below is proved by `linarith` after this unfolding, with the products named as `mul_nonneg`
-hints — `linarith` multiplies them out, so it checks the certificate exactly; no `nlinarith` search is needed.
+hints — `linarith` multiplies them out, so it checks the certificate exactly; no `nlinarith` is used.
 
 ## 2. Kuhn's game (`KuhnPoker/Value.lean`)
 
@@ -79,16 +79,20 @@ variables with the facts `d·p = b` etc. (`mul_div_cancel₀`), denominators cle
 | 1, I | `6d·payoff + b² = bd·v₀ + 2ab(1 − u₂) + bd(1 − v₂)` (every `a, b > 0`, every call `k` with the `3`) |
 | 1, II | `−b² − 6d·payoff = bd(1 + ξ)s₀ + b²x₁ + (b(4a − b) + 2adξ)f₂ + b(2(a − b) − dξ)s₂` (`ξ` the bet with the `2` after a pass) |
 | 3, I | `6d·payoff + b(2a − b) = bd·u₁ + b(2a − b)(1 − u₂)` (needs only `b ≤ 2a`) |
-| 3, II | `−b(2a − b) − 6d·payoff = d(dη − (2a − b))x₀ + bd·s₀ + b²x₁ + b(b − dη)x₂ + bd·f₂` (`case_three_II_identity`) |
+| 3, II | `−b(2a − b) − 6d·payoff = d(dη − (2a − b))x₀ + bd·s₀ + b²x₁ + b(b − dη)x₂ + bd·f₂` (`gn_case_three_II_identity`) |
 
-`hasValue_general` splits on `b ≤ a`, then `b ≤ 2a`, with the Case 3 witness at `η = b/d`. **The optimal sets**
-(`case_one_I_unique`, `case_three_I_unique`, `case_one_II_iff`, `diagonal_II_unique`, `case_four_I_iff`,
-`case_four_II_iff`, `case_three_II_set`, `case_three_II_iff`, `case_three_printed_interval`,
-`case_three_printed_upper_end_fails`): each "only if" instantiates the guarantee at three to five pure strategies
-of the opponent, combines the resulting linear inequalities with coefficients polynomial in `a`, `b` (supplied
+`hasValue_general` splits on `b ≤ a`, then `b ≤ 2a`, with the Case 3 witness at `η = b/d`. **The diagonal**
+(`diagonal_I_iff`): `payoff a a σ τ = a · payoff 1 1 σ τ` (`gn_payoff_scale`, by unfolding and `ring`) and
+`kuhnValue a a = a · (−1/18)`, so for `a > 0` the guarantee at scale `a` is the guarantee of Kuhn's game, and
+`guarantees₁_iff` finishes. **The optimal sets** (`case_one_I_unique`, `case_three_I_unique`, `case_one_II_iff`,
+`diagonal_II_unique`, `case_four_I_iff`, `case_four_II_iff`, `case_three_II_set`, `case_three_II_iff`,
+`case_three_printed_interval`, `case_three_printed_upper_end_fails`): each "only if" instantiates the guarantee
+at two to five pure strategies of the opponent, combines the resulting linear inequalities with coefficients polynomial in `a`, `b` (supplied
 as `mul_nonneg` products to `linarith only`), and divides out the positive factors
-(`nonneg_of_mul_nonneg_right`, `nonpos_of_mul_nonpos_right`); for instance
-`(2a − b)·I + II = −2[ab·x₁ + ad·s₀ + 2a(b − a)x₂ + ad·f₂]` forces I's Case 3 strategy. The sharpness of the
+(`nonneg_of_mul_nonneg_right`, `nonpos_of_mul_nonpos_right`); for instance, with `I` and `II` the two derived
+quantities `HI` and `HII` of `case_three_I_unique` (each `≥ 0`), `(2a − b)·I + II = −2[ab·x₁ + ad·s₀ + 2a(b − a)x₂ +
+ad·f₂]` forces I's Case 3 strategy. The sharpness of the
 corrected interval: below `(2a − b)/d` I gains by betting the `1`, above `b/d` by betting the `3` first; on
 Kuhn's printed interval only its lower end `b/d` survives, and `η = 5/7` at `a = 2, b = 3` is the concrete failure.
-II's optimal set on the line `b = 2a` is larger than either neighbouring description and is not characterized.
+II's optimal set on the line `b = 2a` (computed on the bench, not proved here, to contain the limits of both
+neighbouring descriptions) is not characterized.

@@ -254,7 +254,7 @@ theorem nf_lower_seq (α : ℝ) (hα : α ∈ Set.Icc (0 : ℝ) (1 / 3)) (u v : 
   obtain ⟨hu1, -⟩ := hu 1
   obtain ⟨-, hu2⟩ := hu 2
   simp only [nf_F, Matrix.cons_val]
-  nlinarith [mul_nonneg ha0 hv0, mul_nonneg ha0 (sub_nonneg.2 hv2), mul_nonneg (sub_nonneg.2 ha1) hu1,
+  linarith [mul_nonneg ha0 hv0, mul_nonneg ha0 (sub_nonneg.2 hv2), mul_nonneg (sub_nonneg.2 ha1) hu1,
     mul_nonneg (by linarith : (0 : ℝ) ≤ 1 / 18 + α / 6) (sub_nonneg.2 hu2)]
 
 /-- Kuhn's strategy for II holds every plan to `−1/18`: `−1/18 − nf_F = B₁/18 + C₀/6 + (1 − B₂ − C₂)/6`. -/
