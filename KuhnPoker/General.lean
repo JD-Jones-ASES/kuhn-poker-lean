@@ -647,4 +647,140 @@ theorem gn_diagonal_II_unique (a : ℝ) (ha : 0 < a) (τ : Strategy₂) :
   · rintro rfl
     exact ⟨0, ⟨le_rfl, le_rfl⟩, rfl⟩
 
+/-! ### Extensions: the optimal sets in Case 4
+
+For `b ≥ 2a` the value is `0`. I's optimal strategies: pass and fold with the `1` and the `2`, and with the `3`
+bet first or pass and call with enough weight, `2a·x₂ + d·(1 − x₂)·y₂ ≥ 4a`. For `b > 2a` II's optimal
+strategies: never bet after a pass with the `1` or the `2`, never call with them, call with the `3` with
+probability at least `4a/d`; the bet with the `3` after a pass is free. Each "only if" uses three pure
+strategies of the opponent. -/
+
+/-- Case 4, `2a ≤ b`: I's optimal strategies. -/
+theorem gn_case_four_I_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a ≤ b) (σ : Strategy₁) :
+    Guarantees₁ a b σ 0 ↔ σ.IsValid ∧ σ.1 0 = 0 ∧ σ.1 1 = 0 ∧ σ.2 0 = 0 ∧ σ.2 1 = 0 ∧
+      4 * a ≤ 2 * a * σ.1 2 + (2 * a + b) * ((1 - σ.1 2) * σ.2 2) := by
+  obtain ⟨x, y⟩ := σ
+  constructor
+  · rintro ⟨hσ, h⟩
+    have hσ' := hσ
+    simp only [Strategy₁.IsValid, Set.mem_Icc] at hσ'
+    obtain ⟨⟨hx0, hx0'⟩, hy0, hy0'⟩ := hσ' 0
+    obtain ⟨⟨hx1, hx1'⟩, hy1, hy1'⟩ := hσ' 1
+    obtain ⟨⟨hx2, hx2'⟩, hy2, hy2'⟩ := hσ' 2
+    have E000 := h (![0, 0, 1], ![0, 0, 1])
+      (gn_isValid₂ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    have E100 := h (![1, 0, 1], ![0, 0, 1])
+      (gn_isValid₂ gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    have E101 := h (![1, 0, 1], ![0, 1, 1])
+      (gn_isValid₂ gn_one_mem gn_zero_mem gn_one_mem gn_zero_mem gn_one_mem gn_one_mem)
+    rw [payoff_eq_sum] at E000 E100 E101
+    simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte] at E000 E100 E101
+    have hs0 : 0 ≤ (1 - x 0) * y 0 := mul_nonneg (sub_nonneg.mpr hx0') hy0
+    have hs1 : 0 ≤ (1 - x 1) * y 1 := mul_nonneg (sub_nonneg.mpr hx1') hy1
+    have hf2 : 0 ≤ (1 - x 2) * (1 - y 2) := mul_nonneg (sub_nonneg.mpr hx2') (sub_nonneg.mpr hy2')
+    have p0 : 0 ≤ (b - 2 * a) * x 0 := mul_nonneg (sub_nonneg.mpr hab) hx0
+    have p1 : 0 ≤ b * x 1 := mul_nonneg hb.le hx1
+    have p2 : 0 ≤ b * ((1 - x 0) * y 0) := mul_nonneg hb.le hs0
+    have p3 : 0 ≤ b * ((1 - x 1) * y 1) := mul_nonneg hb.le hs1
+    have z1 : x 1 = 0 :=
+      le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [E000, p0, p2, p3]) hb) hx1
+    have zs0 : (1 - x 0) * y 0 = 0 :=
+      le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [E000, p0, p1, p3]) hb) hs0
+    have zs1 : (1 - x 1) * y 1 = 0 :=
+      le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [E000, p0, p1, p2]) hb) hs1
+    have e1 : a * x 1 = 0 := by rw [z1, mul_zero]
+    have e1' : b * x 1 = 0 := by rw [z1, mul_zero]
+    have e2 : a * ((1 - x 0) * y 0) = 0 := by rw [zs0, mul_zero]
+    have e2' : b * ((1 - x 0) * y 0) = 0 := by rw [zs0, mul_zero]
+    have e3 : a * ((1 - x 1) * y 1) = 0 := by rw [zs1, mul_zero]
+    have e3' : b * ((1 - x 1) * y 1) = 0 := by rw [zs1, mul_zero]
+    have z0 : x 0 = 0 := by
+      rcases hab.lt_or_eq with hlt | heq
+      · exact le_antisymm (nonpos_of_mul_nonpos_right
+          (by linarith only [E000, p1, p2, p3] : (b - 2 * a) * x 0 ≤ 0) (sub_pos.mpr hlt)) hx0
+      · have f1 : 0 ≤ a * ((1 - x 2) * (1 - y 2)) := mul_nonneg ha.le hf2
+        have h' : a * x 0 ≤ 0 := by
+          subst heq
+          linarith only [E101, e1, e1', e2, e2', e3, e3', f1]
+        exact le_antisymm (nonpos_of_mul_nonpos_right h' ha) hx0
+    have zy0 : y 0 = 0 := by
+      rw [z0, sub_zero, one_mul] at zs0
+      exact zs0
+    have zy1 : y 1 = 0 := by
+      rw [z1, sub_zero, one_mul] at zs1
+      exact zs1
+    refine ⟨hσ, z0, z1, zy0, zy1, ?_⟩
+    have e0 : a * x 0 = 0 := by rw [z0, mul_zero]
+    have e0' : b * x 0 = 0 := by rw [z0, mul_zero]
+    show 4 * a ≤ 2 * a * x 2 + (2 * a + b) * ((1 - x 2) * y 2)
+    linarith only [E100, e0, e0', e1, e1', e2', e3]
+  · rintro ⟨hσ, h0, h1, h2, h3, hc⟩
+    refine ⟨hσ, ?_⟩
+    rintro ⟨u, v⟩ hτ
+    simp only [Strategy₂.IsValid, Set.mem_Icc] at hτ
+    obtain ⟨⟨hu0, -⟩, hv0, -⟩ := hτ 0
+    obtain ⟨⟨hu1, -⟩, hv1, -⟩ := hτ 1
+    have hσ' := hσ
+    simp only [Strategy₁.IsValid, Set.mem_Icc] at hσ'
+    obtain ⟨⟨hx2, -⟩, -, -⟩ := hσ' 2
+    dsimp only at h0 h1 h2 h3 hc
+    rw [payoff_eq_sum]
+    simp only [dealPayoff, toHigher, Fin.reduceLT, ↓reduceIte, h0, h1, h2, h3]
+    linarith [mul_nonneg (sub_nonneg.mpr hc) hu0, mul_nonneg (mul_nonneg hb.le hx2) hv0,
+      mul_nonneg (by linarith : (0 : ℝ) ≤ 2 * a * x 2 + (2 * a + b) * ((1 - x 2) * y 2) - 4 * a + 2 * a) hu1,
+      mul_nonneg (mul_nonneg hb.le hx2) hv1]
+
+/-- Case 4 beyond its boundary, `2a < b`: II's optimal strategies. -/
+theorem gn_case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a < b) (τ : Strategy₂) :
+    Guarantees₂ a b τ 0 ↔ τ.IsValid ∧ τ.1 0 = 0 ∧ τ.1 1 = 0 ∧ τ.2 0 = 0 ∧ τ.2 1 = 0 ∧
+      4 * a ≤ (2 * a + b) * τ.2 2 := by
+  obtain ⟨u, v⟩ := τ
+  constructor
+  · rintro ⟨hτ, h⟩
+    have hτ' := hτ
+    simp only [Strategy₂.IsValid, Set.mem_Icc] at hτ'
+    obtain ⟨⟨hu0, hu0'⟩, hv0, hv0'⟩ := hτ' 0
+    obtain ⟨⟨hu1, hu1'⟩, hv1, hv1'⟩ := hτ' 1
+    -- I's pure strategies (card 0, card 1, card 2): fold–fold–call, fold–fold–bet, bet–fold–fold
+    have Fa := h (![0, 0, 0], ![0, 0, 1])
+      (gn_isValid₁ gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    have Fb := h (![0, 0, 1], ![0, 0, 0])
+      (gn_isValid₁ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+    have Fc := h (![1, 0, 0], ![0, 0, 0])
+      (gn_isValid₁ gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+    rw [payoff_eq_sum] at Fa Fb Fc
+    simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte] at Fa Fb Fc
+    have q0 : 0 ≤ (b - 2 * a) * u 0 := mul_nonneg (sub_nonneg.mpr hab.le) hu0
+    have q1 : 0 ≤ b * u 1 := mul_nonneg hb.le hu1
+    have zu0 : u 0 = 0 :=
+      le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [Fa, q1]) (sub_pos.mpr hab)) hu0
+    have zu1 : u 1 = 0 := le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [Fa, q0]) hb) hu1
+    have ea : a * u 0 = 0 := by rw [zu0, mul_zero]
+    have q2 : 0 ≤ b * v 0 := mul_nonneg hb.le hv0
+    have q3 : 0 ≤ b * v 1 := mul_nonneg hb.le hv1
+    have zv0 : v 0 = 0 := le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [Fb, ea, q3]) hb) hv0
+    have zv1 : v 1 = 0 := le_antisymm (nonpos_of_mul_nonpos_right (by linarith only [Fb, ea, q2]) hb) hv1
+    refine ⟨hτ, zu0, zu1, zv0, zv1, ?_⟩
+    have eb : a * u 1 = 0 := by rw [zu1, mul_zero]
+    have ec : a * v 1 = 0 := by rw [zv1, mul_zero]
+    have ed : b * v 1 = 0 := by rw [zv1, mul_zero]
+    show 4 * a ≤ (2 * a + b) * v 2
+    linarith only [Fc, ea, eb, ec, ed]
+  · rintro ⟨hτ, h0, h1, h2, h3, hc⟩
+    refine ⟨hτ, ?_⟩
+    rintro ⟨x, y⟩ hσ
+    simp only [Strategy₁.IsValid, Set.mem_Icc] at hσ
+    obtain ⟨⟨hx0, hx0'⟩, hy0, -⟩ := hσ 0
+    obtain ⟨⟨hx1, hx1'⟩, hy1, -⟩ := hσ 1
+    have hτ' := hτ
+    simp only [Strategy₂.IsValid, Set.mem_Icc] at hτ'
+    obtain ⟨⟨hu2, -⟩, -, -⟩ := hτ' 2
+    dsimp only at h0 h1 h2 h3 hc
+    rw [payoff_eq_sum]
+    simp only [dealPayoff, toHigher, Fin.reduceLT, ↓reduceIte, h0, h1, h2, h3]
+    linarith [mul_nonneg (sub_nonneg.mpr hc) hx0,
+      mul_nonneg (mul_nonneg hb.le hu2) (mul_nonneg (sub_nonneg.mpr hx0') hy0),
+      mul_nonneg (by linarith : (0 : ℝ) ≤ (2 * a + b) * v 2 - 2 * a) hx1,
+      mul_nonneg (mul_nonneg hb.le hu2) (mul_nonneg (sub_nonneg.mpr hx1') hy1)]
+
 end KuhnPoker
