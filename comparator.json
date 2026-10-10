@@ -1,0 +1,31 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "KuhnPoker.hasValue_one_one",
+    "KuhnPoker.hasValue_unique",
+    "KuhnPoker.exists_isEquilibrium",
+    "KuhnPoker.payoff_of_isEquilibrium",
+    "KuhnPoker.isEquilibrium_iff",
+    "KuhnPoker.guarantees₂_iff",
+    "KuhnPoker.guarantees₁_iff",
+    "KuhnPoker.essentialMatrix_eq",
+    "KuhnPoker.basic₁_guarantees",
+    "KuhnPoker.basic₂_guarantees",
+    "KuhnPoker.hasMixedValue",
+    "KuhnPoker.guaranteesMixed₁_iff",
+    "KuhnPoker.guaranteesMixed₂_iff",
+    "KuhnPoker.hasValue_general",
+    "KuhnPoker.kuhnValue_one_one",
+    "KuhnPoker.guarantees_case_one",
+    "KuhnPoker.guarantees_case_three",
+    "KuhnPoker.guarantees_case_four"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

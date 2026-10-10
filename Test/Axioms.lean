@@ -34,24 +34,14 @@ run_cmd do
           logError m!"Unexpected axiom dependency: {name} -> {ax}"
   unless checked ≥ 40 do
     logError m!"Axiom audit matched only {checked} project constants; expected at least 40"
-  for n in [`KuhnPoker.hasValue_one_one,
-      `KuhnPoker.hasValue_unique,
-      `KuhnPoker.exists_isEquilibrium,
-      `KuhnPoker.payoff_of_isEquilibrium,
-      `KuhnPoker.isEquilibrium_iff,
-      `KuhnPoker.guarantees₂_iff,
-      `KuhnPoker.guarantees₁_iff,
-      `KuhnPoker.essentialMatrix_eq,
-      `KuhnPoker.basic₁_guarantees,
-      `KuhnPoker.basic₂_guarantees,
-      `KuhnPoker.hasMixedValue,
-      `KuhnPoker.guaranteesMixed₁_iff,
-      `KuhnPoker.guaranteesMixed₂_iff,
-      `KuhnPoker.hasValue_general,
-      `KuhnPoker.kuhnValue_one_one,
-      `KuhnPoker.guarantees_case_one,
-      `KuhnPoker.guarantees_case_three,
-      `KuhnPoker.guarantees_case_four] do
+  for n in [`KuhnPoker.hasValue_one_one, `KuhnPoker.hasValue_unique,
+      `KuhnPoker.exists_isEquilibrium, `KuhnPoker.payoff_of_isEquilibrium,
+      `KuhnPoker.isEquilibrium_iff, `KuhnPoker.guarantees₂_iff, `KuhnPoker.guarantees₁_iff,
+      `KuhnPoker.essentialMatrix_eq, `KuhnPoker.basic₁_guarantees,
+      `KuhnPoker.basic₂_guarantees, `KuhnPoker.hasMixedValue, `KuhnPoker.guaranteesMixed₁_iff,
+      `KuhnPoker.guaranteesMixed₂_iff, `KuhnPoker.hasValue_general,
+      `KuhnPoker.kuhnValue_one_one, `KuhnPoker.guarantees_case_one,
+      `KuhnPoker.guarantees_case_three, `KuhnPoker.guarantees_case_four] do
     unless env.contains n do
       logError m!"Compared theorem is missing from the environment: {n}"
   logInfo m!"Audited {checked} project constants; unexpected axiom dependencies: {rejected}."
