@@ -783,4 +783,104 @@ theorem gn_case_four_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 2 * a <
       mul_nonneg (by linarith : (0 : ℝ) ≤ (2 * a + b) * v 2 - 2 * a) hx1,
       mul_nonneg (mul_nonneg hb.le hu2) (mul_nonneg (sub_nonneg.mpr hx1') hy1)]
 
+/-! ### Extensions: II's optimal strategies in Case 3
+
+For `a ≤ b < 2a` the second player's bets after a pass are forced (`b/d, 0, 1`) and the calls form a
+polytope cut out by three linear inequalities; the slice `v₀ = 0, v₂ = 1` is the pinned interval for `η`. -/
+
+/-- Case 3 below its upper boundary, `a ≤ b < 2a`: II's optimal strategies. -/
+theorem gn_case_three_II_set (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b < 2 * a)
+    (τ : Strategy₂) :
+    Guarantees₂ a b τ (kuhnValue a b) ↔ τ.IsValid ∧ τ.1 = ![b / (2 * a + b), 0, 1] ∧
+      (2 * a + b) * (τ.2 0 + τ.2 1) ≤ b ∧ 4 * a ≤ (2 * a + b) * (τ.2 1 + τ.2 2) ∧
+      2 * a * (2 * a + b) + 2 * a * b + b * (2 * a + b) * τ.2 0 ≤ (2 * a + b) * (2 * a + b) * τ.2 2 := by
+  have hd : 0 < 2 * a + b := by positivity
+  obtain ⟨u, v⟩ := τ
+  rw [gn_value_case_three hab hb2.le]
+  constructor
+  · rintro ⟨hτ, h⟩
+    have hτ' := hτ
+    simp only [Strategy₂.IsValid, Set.mem_Icc] at hτ'
+    obtain ⟨⟨hu0, hu0'⟩, hv0, hv0'⟩ := hτ' 0
+    obtain ⟨⟨hu1, hu1'⟩, hv1, hv1'⟩ := hτ' 1
+    obtain ⟨⟨hu2, hu2'⟩, hv2, hv2'⟩ := hτ' 2
+    have key : ∀ x y : Fin 3 → ℝ, Strategy₁.IsValid (x, y) →
+        (2 * a + b) * (6 * payoff a b (x, y) (u, v)) + b * (2 * a - b) ≤ 0 := by
+      intro x y hσ
+      have h1 := h (x, y) hσ
+      rw [le_div_iff₀ (by positivity)] at h1
+      linarith
+    -- I's pure strategies (card 0, card 1, card 2): fold–fold–call, fold–call–call, fold–fold–bet,
+    -- bet–fold–call, fold–bet–call
+    have FA := key ![0, 0, 0] ![0, 0, 1]
+      (gn_isValid₁ gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    have FB := key ![0, 0, 0] ![0, 1, 1]
+      (gn_isValid₁ gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem gn_one_mem)
+    have FC := key ![0, 0, 1] ![0, 0, 0]
+      (gn_isValid₁ gn_zero_mem gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem)
+    have FD := key ![1, 0, 0] ![0, 0, 1]
+      (gn_isValid₁ gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    have FE := key ![0, 1, 0] ![0, 0, 1]
+      (gn_isValid₁ gn_zero_mem gn_one_mem gn_zero_mem gn_zero_mem gn_zero_mem gn_one_mem)
+    rw [payoff_eq_sum] at FA FB FC FD FE
+    simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte] at FA FB FC FD FE
+    have q1 : 0 ≤ (2 * a + b) * u 1 := mul_nonneg hd.le hu1
+    have q2 : 0 ≤ (2 * a + b) * (1 - u 2) := mul_nonneg hd.le (sub_nonneg.mpr hu2')
+    have HB : 2 * ((2 * a + b) * u 0 - b) + (2 * a + b) * u 1 + (2 * a + b) * (1 - u 2) ≤ 0 := by
+      have h' : b * (2 * ((2 * a + b) * u 0 - b) + (2 * a + b) * u 1 + (2 * a + b) * (1 - u 2)) ≤ 0 := by
+        linarith only [FB]
+      exact nonpos_of_mul_nonpos_right h' hb
+    have hA0 : (2 * a + b) * u 0 - b ≤ 0 := by linarith only [HB, q1, q2]
+    have h2ab : 0 < 2 * a - b := by linarith
+    have zu1 : u 1 = 0 := by
+      have k : b * ((2 * a + b) * u 1) ≤ 0 := by
+        linarith only [FA, mul_nonneg h2ab.le (neg_nonneg.mpr hA0)]
+      exact le_antisymm (nonpos_of_mul_nonpos_right (nonpos_of_mul_nonpos_right k hb) hd) hu1
+    have e1 : b * ((2 * a + b) * u 1) = 0 := by rw [zu1, mul_zero, mul_zero]
+    have zA0 : (2 * a + b) * u 0 - b = 0 := by
+      have k : 0 ≤ (2 * a - b) * ((2 * a + b) * u 0 - b) := by linarith only [FA, e1]
+      exact le_antisymm hA0 (nonneg_of_mul_nonneg_right k h2ab)
+    have zu2 : u 2 = 1 := by
+      have k : (2 * a + b) * (1 - u 2) ≤ 0 := by linarith only [HB, zA0, zu1, q1]
+      have k' := nonpos_of_mul_nonpos_right k hd
+      linarith
+    have zu0 : u 0 = b / (2 * a + b) := by
+      rw [eq_div_iff hd.ne']
+      linarith only [zA0]
+    simp only [zu1, zu2] at FC FD FE
+    have m1 : a * ((2 * a + b) * u 0 - b) = 0 := by rw [zA0, mul_zero]
+    have m2 : b * ((2 * a + b) * u 0 - b) = 0 := by rw [zA0, mul_zero]
+    refine ⟨hτ, ?_, ?_, ?_, ?_⟩
+    · funext c
+      fin_cases c <;> simp [zu0, zu1, zu2]
+    · show (2 * a + b) * (v 0 + v 1) ≤ b
+      have k : b * ((2 * a + b) * (v 0 + v 1) - b) ≤ 0 := by linarith only [FC, m1, m2]
+      linarith only [nonpos_of_mul_nonpos_right k hb]
+    · show 4 * a ≤ (2 * a + b) * (v 1 + v 2)
+      have k : (2 * a + b) * (4 * a - (2 * a + b) * (v 1 + v 2)) ≤ 0 := by linarith only [FD, m1, m2]
+      linarith only [nonpos_of_mul_nonpos_right k hd]
+    · show 2 * a * (2 * a + b) + 2 * a * b + b * (2 * a + b) * v 0 ≤ (2 * a + b) * (2 * a + b) * v 2
+      linarith only [FE, m1, m2]
+  · rintro ⟨hτ, hu, c₁, c₂, c₃⟩
+    refine ⟨hτ, ?_⟩
+    dsimp only at hu c₁ c₂ c₃
+    subst hu
+    rintro ⟨x, y⟩ hσ
+    simp only [Strategy₁.IsValid, Set.mem_Icc] at hσ
+    obtain ⟨⟨hx0, hx0'⟩, hy0, hy0'⟩ := hσ 0
+    obtain ⟨⟨hx1, hx1'⟩, hy1, hy1'⟩ := hσ 1
+    obtain ⟨⟨hx2, hx2'⟩, hy2, hy2'⟩ := hσ 2
+    have hp : (2 * a + b) * (b / (2 * a + b)) = b := mul_div_cancel₀ b hd.ne'
+    generalize b / (2 * a + b) = p at hp ⊢
+    rw [le_div_iff₀ (by positivity), payoff_eq_sum]
+    simp only [dealPayoff, toHigher, Matrix.cons_val, Fin.reduceLT, ↓reduceIte]
+    have e₁ : (2 * (x 1) * (y 1) * a + (x 1) * (y 1) * b - 2 * (x 1) * a + 2 * (x 2) * (y 2) * a
+        + (x 2) * (y 2) * b - 2 * (x 2) * a - 2 * (y 1) * a - (y 1) * b - 2 * (y 2) * a - (y 2) * b
+        + 4 * a) * ((2 * a + b) * p - b) = 0 := by rw [hp, sub_self, mul_zero]
+    linarith [mul_nonneg (mul_nonneg (sub_nonneg.mpr hx2') (sub_nonneg.mpr hy2')) (mul_nonneg hb.le hd.le),
+      mul_nonneg hx2 (mul_nonneg hb.le (sub_nonneg.mpr c₁)),
+      mul_nonneg hx0 (mul_nonneg hd.le (sub_nonneg.mpr c₂)),
+      mul_nonneg (mul_nonneg (sub_nonneg.mpr hx0') hy0) (mul_nonneg hb.le hd.le),
+      mul_nonneg hx1 (sub_nonneg.mpr c₃)]
+
 end KuhnPoker
