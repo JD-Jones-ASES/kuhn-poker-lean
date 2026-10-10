@@ -8,11 +8,13 @@ public import KuhnPoker.Payoff
 
 The payoff of Kuhn's game (`a = b = 1`) is an explicit polynomial in the twelve probabilities
 (`co_payoff_poly`). Against II's strategy `kuhnII`, I's deficit `−1/18 − payoff` is
-`(1 − σ.1 0)·σ.2 0/6 + σ.1 1/18 + (1 − σ.1 2)(1 − σ.2 2)/6` (`co_upper`). Against any valid `τ`, Kuhn's
-family `kuhnI α k` earns `−1/18` plus `(α/2)·τ.2 0 + (α/2)(1 − τ.2 2) + ((1/3 − α)/2)·τ.1 1
-+ (1/18 + α/6)(1 − τ.1 2) − (1 − 3α)(1 − k)(τ.1 0 + τ.1 1)/2`, whose last term vanishes when `3α = 1` or
-`k = 1` (`co_lower`). Three pure strategies of I force every coordinate of an optimal `τ` (`co_II_unique`);
-three pure strategies of II force an optimal `σ` onto the family (`co_I_family`).
+`(1 − σ.1 0)·σ.2 0/6 + σ.1 1/18 + (1 − σ.1 2)(1 − σ.2 2)/6` (`co_upper_cert`, `co_upper`).
+Against any valid `τ`, Kuhn's family `kuhnI α k` earns `−1/18` plus
+`(α/2)·τ.2 0 + (α/2)(1 − τ.2 2) + ((1/3 − α)/2)·τ.1 1 + (1/18 + α/6)(1 − τ.1 2)`
+`− (1 − 3α)(1 − k)(τ.1 0 + τ.1 1)/2`, whose last term vanishes when `3α = 1` or `k = 1`
+(`co_lower_cert`, `co_lower`). Three pure strategies of I force every coordinate of an optimal `τ`
+(`co_II_unique`); three pure strategies of II force an optimal `σ` onto the family (`co_I_family`).
+The equilibria are exactly the pairs (a family member, `kuhnII`) (`co_isEquilibrium_iff_explicit`).
 -/
 
 @[expose] public section
@@ -59,14 +61,32 @@ theorem co_valid_kuhnI (α k : ℝ) (hα0 : 0 ≤ α) (hα1 : α ≤ 1 / 3) (hk0
       Set.mem_Icc] <;>
     exact ⟨⟨by linarith, by linarith⟩, ⟨by linarith, by linarith⟩⟩
 
+/-- The certificate for II: against `kuhnII`, I's deficit from `−1/18` is a sum of three products of
+probabilities and complements (an identity, for every `σ`). -/
+theorem co_upper_cert (σ : Strategy₁) :
+    -1 / 18 - payoff 1 1 σ kuhnII =
+      (1 - σ.1 0) * σ.2 0 / 6 + σ.1 1 / 18 + (1 - σ.1 2) * (1 - σ.2 2) / 6 := by
+  rw [co_payoff_poly]
+  simp only [kuhnII, Matrix.cons_val]
+  ring
+
 /-- II's strategy `kuhnII` holds every valid strategy of I to at most `−1/18`. -/
 theorem co_upper (σ : Strategy₁) (hσ : σ.IsValid) : payoff 1 1 σ kuhnII ≤ -1 / 18 := by
   obtain ⟨-, b0', k0, -⟩ := co_box₁ hσ 0
   obtain ⟨b1, -, -, -⟩ := co_box₁ hσ 1
   obtain ⟨-, b2', -, k2'⟩ := co_box₁ hσ 2
+  linarith [co_upper_cert σ, mul_nonneg (sub_nonneg.2 b0') k0,
+    mul_nonneg (sub_nonneg.2 b2') (sub_nonneg.2 k2')]
+
+/-- The certificate for I: against any `τ`, Kuhn's `kuhnI α k` earns `−1/18` plus four products of
+probabilities and complements, less a term carrying the factor `(1 − 3α)(1 − k)` (an identity). -/
+theorem co_lower_cert (α k : ℝ) (τ : Strategy₂) :
+    payoff 1 1 (kuhnI α k) τ + 1 / 18 =
+      α / 2 * τ.2 0 + α / 2 * (1 - τ.2 2) + (1 / 3 - α) / 2 * τ.1 1 + (1 / 18 + α / 6) * (1 - τ.1 2)
+      - (1 - 3 * α) * (1 - k) * (τ.1 0 + τ.1 1) / 2 := by
   rw [co_payoff_poly]
-  simp only [kuhnII, Matrix.cons_val]
-  linarith [mul_nonneg (sub_nonneg.2 b0') k0, mul_nonneg (sub_nonneg.2 b2') (sub_nonneg.2 k2')]
+  simp only [kuhnI, Matrix.cons_val]
+  ring
 
 /-- Kuhn's family earns at least `−1/18` against every valid strategy of II. -/
 theorem co_lower (α k : ℝ) (hα0 : 0 ≤ α) (hα1 : α ≤ 1 / 3) (hor : 3 * α = 1 ∨ k = 1)
@@ -74,13 +94,14 @@ theorem co_lower (α k : ℝ) (hα0 : 0 ≤ α) (hα1 : α ≤ 1 / 3) (hor : 3 *
   obtain ⟨-, -, u0, -⟩ := co_box₂ hτ 0
   obtain ⟨t1, -, -, -⟩ := co_box₂ hτ 1
   obtain ⟨-, t2', -, u2'⟩ := co_box₂ hτ 2
-  rw [co_payoff_poly]
-  simp only [kuhnI, Matrix.cons_val]
-  rcases hor with h | rfl
-  · obtain rfl : α = 1 / 3 := by linarith
-    linarith
-  · linarith [mul_nonneg hα0 u0, mul_nonneg hα0 (sub_nonneg.2 u2'), mul_nonneg (sub_nonneg.2 hα1) t1,
-      mul_nonneg (show (0 : ℝ) ≤ 1 / 18 + α / 6 by linarith) (sub_nonneg.2 t2')]
+  have hz : (1 - 3 * α) * (1 - k) = 0 := by
+    rcases hor with h | h
+    · rw [show 1 - 3 * α = 0 by linarith, zero_mul]
+    · rw [h, sub_self, mul_zero]
+  have hid := co_lower_cert α k τ
+  rw [hz, zero_mul, zero_div, sub_zero] at hid
+  linarith [mul_nonneg hα0 u0, mul_nonneg hα0 (sub_nonneg.2 u2'), mul_nonneg (sub_nonneg.2 hα1) t1,
+    mul_nonneg (show (0 : ℝ) ≤ 1 / 18 + α / 6 by linarith) (sub_nonneg.2 t2')]
 
 /-- An optimal strategy of II is `kuhnII`: three pure strategies of I force all six coordinates. -/
 theorem co_II_unique (τ : Strategy₂) (h : Guarantees₂ 1 1 τ (-1 / 18)) : τ = kuhnII := by
@@ -234,5 +255,12 @@ theorem guarantees₁_iff_internal (σ : Strategy₁) : Guarantees₁ 1 1 σ (-1
   · exact co_I_family σ
   · rintro ⟨α, ⟨hα0, hα1⟩, k, ⟨hk0, hk1⟩, hor, rfl⟩
     exact ⟨co_valid_kuhnI α k hα0 hα1 hk0 hk1, fun τ hτ => co_lower α k hα0 hα1 hor τ hτ⟩
+
+/-- The equilibria of Kuhn's game, explicitly: II plays `kuhnII` and I plays a member of Kuhn's family. -/
+theorem co_isEquilibrium_iff_explicit (σ : Strategy₁) (τ : Strategy₂) :
+    IsEquilibrium 1 1 σ τ ↔
+      (∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k) ∧
+        τ = kuhnII := by
+  rw [isEquilibrium_iff_internal, guarantees₁_iff_internal, guarantees₂_iff_internal]
 
 end KuhnPoker
