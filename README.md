@@ -1,4 +1,4 @@
-# Kuhn poker: the value −1/18, the optimal sets, and the value, optimal sets and equilibria at every ante and bet
+# Kuhn poker: the value −1/18, all optimal strategies, and the solution at every ante and bet
 
 Kuhn's simplified two-person poker (H. W. Kuhn, *A simplified two-person poker*, Contributions to the Theory of
 Games I, Ann. of Math. Studies 24 (1950) 97–103): three cards `1 < 2 < 3`, one dealt to each player, an ante of

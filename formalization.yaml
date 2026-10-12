@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Kuhn poker: the value -1/18, player II's unique optimal strategy, player I's one-parameter family, the normal form's basic optimal strategies and optimal sets, and the value, both players' exact optimal sets and every equilibrium at every ante and bet, with Kuhn's Case 3 interval corrected"
+  name: "Kuhn poker: the value −1/18, all optimal strategies, and the solution at every ante and bet"
   description: >-
     A Lean 4 development of Kuhn's simplified two-person poker (Kuhn 1950): three cards 1 < 2 < 3, one dealt
     to each player with the six deals equiprobable, an ante of a from each player and a single bet of b, player I
