@@ -201,7 +201,7 @@ related_formalizations:
 
 status:
   scope: >-
-    Thirty-seven compared theorems over thirty-one compared definitions, all built from Kuhn's game tree. For
+    Thirty-seven compared theorems over thirty-one Challenge definitions, all built from Kuhn's game tree. For
     Kuhn's game (a = b = 1): the value -1/18 in both guarantee and equilibrium form, uniqueness of the value,
     the two certificate identities, the explicit equilibrium set, II's unique optimal strategy, I's optimal set
     as Kuhn's family with the unreached-information-set clause, Kuhn's essential matrix, his twelve and two

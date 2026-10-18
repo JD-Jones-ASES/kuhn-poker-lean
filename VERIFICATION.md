@@ -69,9 +69,9 @@ Kuhn's tree), so the comparator checks the Solution's values against them.
   fails the run.
 - **Definitions and statements** — `scripts/check_definitions.py` compares every definition block of Challenge.lean
   with `KuhnPoker/Defs.lean` character for character; `scripts/check_statements.py` compares every theorem header
-  of Challenge.lean with Solution.lean; `scripts/verify.py` prints every compared definition, and the type of every compared theorem, with
+  of Challenge.lean with Solution.lean; `scripts/verify.py` prints every Challenge definition, and the type of every compared theorem, with
   `pp.all` from both modules and requires identical output, and runs Palomar's core-notation audit on every
-  compared declaration.
+  declaration of the statement surface.
 - **Replay** — `scripts/check_kuhn.py` rebuilds the game from the five courses in the standard library, exactly,
   and checks the essential matrix; II's strategy at a = b = 1 (its guarantee against all 27 pure strategies of I,
   tight exactly on the 8 essential rows, and the failure of every single-coordinate move by ±1/10); I's family on a
