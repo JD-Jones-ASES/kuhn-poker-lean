@@ -30,23 +30,28 @@ project:
     for a <= b <= 2a and 0 for b >= 2a, with explicit guaranteeing strategies in each case; in Case 3 the
     calling probability eta with the 2 ranges over [(2a - b)/(2a + b), b/(2a + b)], and the interval printed
     on p. 102, b/(2a + b) <= eta <= (a + b)/(2a + b), fails at its upper end (at a = 2, b = 3 and eta = 5/7
-    some pure strategy of I earns more than the value). Every inequality is a finite nonnegative-product
-    identity (the target minus the payoff is a sum of nonnegative rational multiples of products of
-    probabilities and their complements, or of such products with the case factors a - b, 2a - b, b - 2a), and
-    every "only if" is a linear certificate from finitely many pure strategies (the coefficients rationals at
-    a = b = 1 and, at general stakes, polynomials in a, b and the free parameter nonnegative on the case's region);
-    no formal library found by the dated search holds the game.
-    Beyond Kuhn's statements: the two certificate identities are stated as theorems; the equilibria of Kuhn's
-    game are exactly the pairs (kuhnI α k, kuhnII); and at general stakes the optimal sets are determined -
-    I's strategy is unique for b < a (up to the unreached call with the 3) and for a < b <= 2a, is Kuhn's family
-    on the diagonal b = a at every scale, and for b >= 2a is cut out by one inequality (a single strategy at
-    b = 2a; beyond it a two-dimensional set in which I may also bet the 3 first, with probability at most
-    (b - 2a)/b), so Kuhn's one-parameter family is optimal only at b = a; II's strategy is unique on the
-    diagonal at every scale, a segment for b <= a (the bet with the 2 after a pass free in
-    [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal mode of behavior' in Case 1 holds in his behaviour
-    parameters only), a polytope of three inequalities for a <= b < 2a, a polytope of one inequality for
-    b > 2a, and on the line b = 2a a five-dimensional polytope (the bet with the 2 after a pass zero and, with
-    bets (p, 0, r) and calls (s, t, w), 2p <= r, s + t <= p, 1 <= t + w, 1 + p + s <= 2w; nine vertices, replayed);
+    II's Case 3 strategy does not guarantee the value). Every guarantee is a finite nonnegative-product identity
+    (the gap between the payoff and the value is a sum of products of the opponent's probabilities and their
+    complements with coefficients nonnegative on the case's region: polynomials in a, b and the free parameter, at
+    general stakes built from a, b, 2a + b, a - b, 2a - b, 4a - b, b - 2a and the interval factors
+    (2a + b)eta - (2a - b), b - (2a + b)eta, 2(a - b) - (2a + b)xi, and, in the optimal-set theorems, the
+    slacks of their stated inequalities), and every "only if" is a linear certificate from finitely many pure strategies (the
+    coefficients rationals at a = b = 1 and, at general stakes, polynomials in a, b and the free parameter
+    nonnegative on the case's region); no formal library found by the dated search holds the game.
+    Beyond Kuhn's statements: the two certificate identities are stated as theorems; the equilibria of Kuhn's game
+    are exactly the pairs (kuhnI α k, kuhnII) with α in [0, 1/3], k in [0, 1] and 3α = 1 or k = 1; and at general
+    stakes the optimal sets are determined - I's strategy is unique for b < a (up to the unreached call with the
+    3) and for a < b <= 2a, is Kuhn's family on the diagonal b = a at every scale, and for b >= 2a never bets the
+    1 or the 2 first, folds them, and with the 3 is cut out by one inequality (a single strategy at b = 2a; beyond
+    it a two-dimensional set in which I may also bet the 3 first, with probability at most (b - 2a)/b), so Kuhn's
+    one-parameter family is optimal only at b = a; II's strategy is unique on the diagonal at every scale and a
+    segment for b <= a (the bet with the 2 after a pass free in [0, 2(a - b)/(2a + b)], so Kuhn's 'unique optimal
+    mode of behavior' in Case 1 holds in his behaviour parameters only); for a <= b < 2a its bets after a pass are
+    forced, (b/(2a + b), 0, 1), and its calls form a polytope of three inequalities; for b > 2a it never bets the
+    1 or the 2 after a pass, never calls with them, and calls with the 3 with probability at least 4a/(2a + b),
+    its bet with the 3 free; and on the line b = 2a its optimal set is a five-dimensional polytope (the bet with
+    the 2 after a pass zero and, with bets (p, 0, r) and calls (s, t, w), 2p <= r, s + t <= p, 1 <= t + w,
+    1 + p + s <= 2w; nine vertices, replayed);
     at every ante a > 0 and bet b > 0 every equilibrium pays the value and a pair is an equilibrium iff each strategy
     guarantees it, so the equilibria are exactly the pairs of optimal strategies, on b = 2a explicitly; the
     corrected Case 3 interval is sharp, and the printed one holds only at its lower end. A second
@@ -441,11 +446,13 @@ fidelity:
     p. 101 live in the reduced game after dominated strategies are removed; here the strategies carry all
     twelve coordinates, and the removed ones are proved to take their forced values in every optimal
     strategy of Kuhn's game (I: fold the 1 to a bet, never bet the 2 first, call with the 3 unless 3 alpha = 1; II: never
-    bet the 2 after a pass, always bet the 3 after a pass, never call with the 1, always call with the 3); at
-    general stakes some are free (II's bet with the 2 for b < a, its bet with the 3 for b > 2a, its calls with
-    the 1 and the 2 on b = 2a), as the optimal-set theorems state. The
-    family is indexed by alpha = gamma/3 in [0, 1/3] rather than Kuhn's gamma in [0, 1]. The clause "3 alpha =
-    1 or k = 1" in guarantees₁_iff is the unreached-information-set convention made explicit: Kuhn's
+    bet the 2 after a pass, always bet the 3 after a pass, never call with the 1, always call with the 3); on the
+    diagonal b = a the same holds at every scale, and off it some are not forced, as the optimal-set theorems
+    state: I's call with the 3 for b < a (where the 3 is always bet) and for b > 2a; II's bet with the 2 after a
+    pass for b < a, its call with the 1 for a < b <= 2a, its bet with the 3 after a pass for b >= 2a, and its call
+    with the 3 for b > a. The family is indexed by alpha = gamma/3 in [0, 1/3] rather than Kuhn's gamma in [0, 1].
+    The clause "3 alpha = 1 or k = 1" in guarantees₁_iff is the unreached-information-set convention made
+    explicit: Kuhn's
     family says nothing about the call with the 3 when it always bets. Optimality is defined as guaranteeing
     the value against every valid strategy of the opponent (the maximin/minimax form), and shown equivalent to
     being part of an equilibrium. The normal-form statements use Kuhn's coding of pure strategies verbatim
@@ -552,17 +559,17 @@ alignment:
       lean: "KuhnPoker.guarantees_case_one"
       module: "Solution"
       status: "proved"
-      note: "For b <= a, Kuhn's Case 1 strategies (with the forced coordinates) guarantee the value."
+      note: "For a, b > 0 and b <= a, Kuhn's Case 1 strategies guarantee kuhnValue a b: I's (b/(2a+b), 0, 1; 0, 2a/(2a+b), 1) and II's (b/(2a+b), 0, 1; 0, (2a-b)/(2a+b), 1)."
     - source: "Kuhn 1950, p. 102, Case 3, the interval for eta corrected"
       lean: "KuhnPoker.guarantees_case_three"
       module: "Solution"
       status: "proved"
-      note: "For a <= b <= 2a, Kuhn's Case 3 strategy for I and his xi for II guarantee the value, with II's eta anywhere in the corrected interval [(2a - b)/(2a + b), b/(2a + b)]."
+      note: "For a, b > 0 and a <= b <= 2a, Kuhn's Case 3 strategies guarantee kuhnValue a b: I's (0, 0, 0; 0, (2a-b)/(2a+b), 1) and II's (b/(2a+b), 0, 1; 0, eta, 1) for every eta in the corrected interval [(2a - b)/(2a + b), b/(2a + b)]."
     - source: "Kuhn 1950, p. 103, Case 4 (b = 2a), and the region b > 2a"
       lean: "KuhnPoker.guarantees_case_four"
       module: "Solution"
       status: "proved"
-      note: "For b >= 2a, I never bets first and calls only with the 3, II bets after a pass and calls only with the 3; both guarantee 0."
+      note: "For a, b > 0 and b >= 2a, I's strategy (0, 0, 0; 0, 0, 1) and II's (0, 0, 1; 0, 0, 1) both guarantee 0: I never bets first and calls only with the 3; II bets after a pass only with the 3 and calls only with the 3."
     - source: "This development (the certificate behind Kuhn's p. 100 value, upper side)"
       lean: "KuhnPoker.upper_certificate"
       module: "Solution"
@@ -582,12 +589,12 @@ alignment:
       lean: "KuhnPoker.case_one_I_unique"
       module: "Solution"
       status: "proved"
-      note: "For b < a, I's strategy guarantees the value iff it is (b/(2a+b), 0, 1; 0, 2a/(2a+b), k) for some k in [0, 1]."
+      note: "For a, b > 0 and b < a, I's strategy guarantees the value iff it is (b/(2a+b), 0, 1; 0, 2a/(2a+b), k) for some k in [0, 1]."
     - source: "This development (Kuhn 1950, p. 102, Case 1: 'both players have a unique optimal mode of behavior' holds for the reduced parameters only)"
       lean: "KuhnPoker.case_one_II_iff"
       module: "Solution"
       status: "proved"
-      note: "For b <= a, II's strategy guarantees the value iff it is (b/(2a+b), ξ, 1; 0, (2a-b)/(2a+b), 1) for some ξ in [0, 2(a-b)/(2a+b)]."
+      note: "For a, b > 0 and b <= a, II's strategy guarantees the value iff it is (b/(2a+b), ξ, 1; 0, (2a-b)/(2a+b), 1) for some ξ in [0, 2(a-b)/(2a+b)]."
     - source: "Kuhn 1950, p. 102 (Case 2 at every scale)"
       lean: "KuhnPoker.diagonal_II_unique"
       module: "Solution"
@@ -607,7 +614,7 @@ alignment:
       lean: "KuhnPoker.case_three_II_iff"
       module: "Solution"
       status: "proved"
-      note: "For a <= b <= 2a, with the other coordinates as pinned, (b/(2a+b), 0, 1; 0, η, 1) guarantees the value iff (2a-b)/(2a+b) <= η <= b/(2a+b)."
+      note: "For a, b > 0 and a <= b <= 2a, with the other coordinates as pinned, (b/(2a+b), 0, 1; 0, η, 1) guarantees the value iff (2a-b)/(2a+b) <= η <= b/(2a+b)."
     - source: "This development (Kuhn 1950, p. 102, Case 3, states the η family only)"
       lean: "KuhnPoker.case_three_II_set"
       module: "Solution"
@@ -617,7 +624,7 @@ alignment:
       lean: "KuhnPoker.case_three_printed_interval"
       module: "Solution"
       status: "proved"
-      note: "On the printed interval, II's strategy guarantees the value iff η = b/(2a+b)."
+      note: "For a, b > 0 and a <= b <= 2a, with η on the printed interval b/(2a+b) <= η <= (a+b)/(2a+b), II's strategy (b/(2a+b), 0, 1; 0, η, 1) guarantees the value iff η = b/(2a+b)."
     - source: "Kuhn 1950, p. 102, Case 3, the printed upper end"
       lean: "KuhnPoker.case_three_printed_upper_end_fails"
       module: "Solution"
@@ -627,12 +634,12 @@ alignment:
       lean: "KuhnPoker.case_four_I_iff"
       module: "Solution"
       status: "proved"
-      note: "For 2a <= b, I's strategy guarantees 0 iff it is valid, never bets the 1 or the 2 first, folds them, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2; at b = 2a this forces σ.1 2 = 0, and for b > 2a the 3 may be bet first with probability at most 1 - 2a/b."
+      note: "For a, b > 0 and 2a <= b, I's strategy guarantees 0 iff it is valid, never bets the 1 or the 2 first, folds them, and 4a <= 2a σ.1 2 + (2a+b)(1 - σ.1 2) σ.2 2; at b = 2a this forces σ.1 2 = 0, and for b > 2a the 3 may be bet first with probability at most 1 - 2a/b."
     - source: "This development (the region b > 2a, which Kuhn does not state; his p. 103 remark on II's freedom at b = 2a is boundary_II_iff)"
       lean: "KuhnPoker.case_four_II_iff"
       module: "Solution"
       status: "proved"
-      note: "For 2a < b, II's strategy guarantees 0 iff it is valid, never bets the 1 or 2 after a pass, never calls with them, and 4a <= (2a+b) τ.2 2."
+      note: "For a, b > 0 and 2a < b, II's strategy guarantees 0 iff it is valid, never bets the 1 or 2 after a pass, never calls with them, and 4a <= (2a+b) τ.2 2."
     - source: "This development (the identity behind II's set on b = 2a)"
       lean: "KuhnPoker.boundary_II_certificate"
       module: "Solution"

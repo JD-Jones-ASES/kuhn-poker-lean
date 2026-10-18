@@ -18,7 +18,7 @@ hints — `linarith` multiplies them out, so it checks the certificate exactly; 
 
 - **The upper bound** (`upper_certificate`, `co_upper`): for every `σ`,
   `−1/18 − payoff σ kuhnII = (1 − σ.1 0)σ.2 0/6 + σ.1 1/18 + (1 − σ.1 2)(1 − σ.2 2)/6` (`ring` after unfolding);
-  three nonnegative products, so `kuhnII` holds every valid `σ` to at most `−1/18`.
+  three products, nonnegative for valid `σ`, so `kuhnII` holds every valid `σ` to at most `−1/18`.
 - **The lower bound** (`lower_certificate`, `co_lower`): for every `α, k, τ`,
   `payoff (kuhnI α k) τ + 1/18 = α/2·τ.2 0 + α/2·(1 − τ.2 2) + (1/3 − α)/2·τ.1 1 + (1/18 + α/6)(1 − τ.1 2)
   − (1 − 3α)(1 − k)(τ.1 0 + τ.1 1)/2`; under `3α = 1 ∨ k = 1` the tail vanishes and the four products are

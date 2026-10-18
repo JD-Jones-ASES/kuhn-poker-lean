@@ -32,9 +32,9 @@ Kuhn's tree), so the comparator checks the Solution's values against them.
 | 16 | `guarantees_case_one` — Case 1 (b ≤ a): Kuhn's strategies guarantee the value | KuhnPoker/General.lean |
 | 17 | `guarantees_case_three` — Case 3 (a ≤ b ≤ 2a): Kuhn's strategies, η ∈ [(2a − b)/(2a + b), b/(2a + b)] | KuhnPoker/General.lean |
 | 18 | `guarantees_case_four` — Case 4 (b ≥ 2a): the value 0 and its strategies | KuhnPoker/General.lean |
-| 19 | `upper_certificate` — the upper-bound identity: −1/18 − payoff σ kuhnII = three nonnegative products, for every σ | KuhnPoker/Value.lean |
-| 20 | `lower_certificate` — the lower-bound identity: payoff (kuhnI α k) τ + 1/18 = four nonnegative products − (1 − 3α)(1 − k)·(…), for every α, k, τ | KuhnPoker/Value.lean |
-| 21 | `isEquilibrium_iff_explicit` — the equilibria of Kuhn's game are exactly the pairs (kuhnI α k, kuhnII) with 3α = 1 ∨ k = 1 | KuhnPoker/Value.lean |
+| 19 | `upper_certificate` — the upper-bound identity, for every σ (valid or not): −1/18 − payoff σ kuhnII = three products, nonnegative when σ is valid | KuhnPoker/Value.lean |
+| 20 | `lower_certificate` — the lower-bound identity, for every α, k, τ (valid or not): payoff (kuhnI α k) τ + 1/18 = four products − (1 − 3α)(1 − k)·(…); the four are nonnegative for α ∈ [0, 1/3] and valid τ | KuhnPoker/Value.lean |
+| 21 | `isEquilibrium_iff_explicit` — the equilibria of Kuhn's game are exactly the pairs (kuhnI α k, kuhnII) with α ∈ [0, 1/3], k ∈ [0, 1], 3α = 1 ∨ k = 1 | KuhnPoker/Value.lean |
 | 22 | `case_one_I_unique` — b < a: I's optimal strategy is unique up to the unreached call with the 3 | KuhnPoker/General.lean |
 | 23 | `case_one_II_iff` — b ≤ a: II's optimal strategies are Kuhn's with the bet with the 2 after a pass free in [0, 2(a − b)/(2a + b)] | KuhnPoker/General.lean |
 | 24 | `diagonal_II_unique` — a = b: II's optimal strategy is unique at every scale | KuhnPoker/General.lean |
@@ -42,7 +42,7 @@ Kuhn's tree), so the comparator checks the Solution's values against them.
 | 26 | `case_three_I_unique` — a < b ≤ 2a: I's optimal strategy is unique | KuhnPoker/General.lean |
 | 27 | `case_three_II_iff` — a ≤ b ≤ 2a: with the other coordinates pinned, η guarantees the value iff (2a − b)/(2a + b) ≤ η ≤ b/(2a + b) | KuhnPoker/General.lean |
 | 28 | `case_three_II_set` — a ≤ b < 2a: II's optimal strategies exactly (bets forced; calls a polytope of three inequalities) | KuhnPoker/General.lean |
-| 29 | `case_three_printed_interval` — on Kuhn's printed interval, II's strategy guarantees the value iff η = b/(2a + b) | KuhnPoker/General.lean |
+| 29 | `case_three_printed_interval` — a ≤ b ≤ 2a, η on Kuhn's printed interval [b/(2a + b), (a + b)/(2a + b)]: II's (b/(2a + b), 0, 1; 0, η, 1) guarantees the value iff η = b/(2a + b) | KuhnPoker/General.lean |
 | 30 | `case_three_printed_upper_end_fails` — at a = 2, b = 3, the printed upper end η = 5/7 fails | KuhnPoker/General.lean |
 | 31 | `case_four_I_iff` — 2a ≤ b: I's optimal strategies exactly | KuhnPoker/General.lean |
 | 32 | `case_four_II_iff` — 2a < b: II's optimal strategies exactly | KuhnPoker/General.lean |

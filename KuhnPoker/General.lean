@@ -272,9 +272,9 @@ theorem gn_case_three_II_identity (a b η : ℝ) (ha : 0 < a) (hb : 0 < b) (x y 
   linear_combination (-(2 * (x 1) * (y 1) * a + (x 1) * (y 1) * b - 2 * (x 1) * a + 2 * (x 2) * (y 2) * a
       + (x 2) * (y 2) * b - 2 * (x 2) * a - 2 * (y 1) * a - (y 1) * b - 2 * (y 2) * a - (y 2) * b + 4 * a)) * hp
 
-/-- The corrected Case 3 interval is sharp: with the other five coordinates of II's strategy as pinned, the
-calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/d ≤ η ≤ b/d`. Below the
-interval I gains by betting the `1` (bluffing); above it, by betting the `3` first. -/
+/-- The corrected Case 3 interval is sharp, `a ≤ b ≤ 2a`: with the other five coordinates of II's strategy as
+pinned, the calling probability `η` with the `2` guarantees the value exactly when
+`(2a − b)/(2a + b) ≤ η ≤ b/(2a + b)`. -/
 theorem case_three_II_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
       η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) := by
@@ -302,8 +302,9 @@ theorem case_three_II_iff_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : 
   · rw [le_div_iff₀ hd]
     linarith
 
-/-- Kuhn's printed Case 3 interval `b/d ≤ η ≤ (a + b)/d` (p. 102) holds only at its lower end: there, and only
-there, II's strategy guarantees the value. -/
+/-- Kuhn's printed Case 3 interval `b/d ≤ η ≤ (a + b)/d` (p. 102) holds only at its lower end: for `a ≤ b ≤ 2a`,
+with the other five coordinates of II's strategy as pinned, `η` on the printed interval guarantees the value only at
+`η = b/d`. -/
 theorem case_three_printed_interval_internal (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
     (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) := by

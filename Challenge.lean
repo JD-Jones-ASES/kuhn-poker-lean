@@ -38,6 +38,8 @@ file states, and `Solution.lean` proves (kernel-only), for Kuhn's game `a = b = 
   segment above (I) or its marginals are II's unique strategy (II) (`guaranteesMixed₁_iff`,
   `guaranteesMixed₂_iff`); Kuhn's form of these sets, the convex hulls of his twelve and two strategies, is
   replayed in `scripts/check_kuhn.py` and is not a theorem here;
+* beyond Kuhn: the two certificate identities (`upper_certificate`, `lower_certificate`) and the equilibria
+  explicitly (`isEquilibrium_iff_explicit`);
 
 and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "without proof", and the region
 `b > 2a` he does not state):
@@ -47,8 +49,7 @@ and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "
   (`guarantees_case_one`, `guarantees_case_three`, `guarantees_case_four`). In Case 3 the calling probability
   `η` with the `2` ranges over `[(2a − b)/(2a + b), b/(2a + b)]`; the interval printed on p. 102,
   `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)`, holds only at its lower end (at `a = 2, b = 3`, `η = 5/7` lets I gain);
-* beyond Kuhn: the two certificate identities (`upper_certificate`, `lower_certificate`); the equilibria explicitly
-  (`isEquilibrium_iff_explicit`); the exact optimal sets at every ante and bet — I's in every region (`case_one_I_unique`,
+* beyond Kuhn: the exact optimal sets at every ante and bet — I's in every region (`case_one_I_unique`,
   `diagonal_I_iff`, `case_three_I_unique`, `case_four_I_iff`) and II's in every region (`case_one_II_iff`,
   `diagonal_II_unique`, `case_three_II_set`, `boundary_II_iff` with its identity `boundary_II_certificate`,
   `case_four_II_iff`); every equilibrium pays the value and a pair is an equilibrium iff each strategy
@@ -59,8 +60,8 @@ and for every ante `a > 0` and bet `b > 0` (Kuhn's pp. 102–103, stated there "
 The definitions are built from the game tree; no imported library holds the game. All proofs are over `ℝ` with the
 probabilities as real variables; every guarantee is a finite nonnegative-product identity (the gap between the
 value and the payoff is a sum of products of probabilities, their complements and case factors, with coefficients
-nonnegative on the case's region: rational constants at `a = b = 1`, polynomials in `a`, `b` and the free parameter
-at general stakes), and the "only if" directions are linear certificates from finitely many pure strategies.
+nonnegative on the case's region: polynomials in `a`, `b` and the free parameter), and the "only if" directions
+are linear certificates from finitely many pure strategies.
 -/
 
 @[expose] public section
@@ -314,7 +315,7 @@ theorem isEquilibrium_iff_explicit (σ : Strategy₁) (τ : Strategy₂) :
       (∃ α ∈ Set.Icc (0 : ℝ) (1 / 3), ∃ k ∈ Set.Icc (0 : ℝ) 1, (3 * α = 1 ∨ k = 1) ∧ σ = kuhnI α k) ∧
         τ = kuhnII := sorry
 
-/-- Case 1 off the diagonal, `b < a`: I's optimal strategy is unique up to the call with the `3`, which is never reached (I always bets the `3`); Kuhn's one-parameter family exists only at `b = a`. -/
+/-- Case 1 off the diagonal, `b < a`: I's optimal strategy is unique up to the call with the `3`, which is never reached (I always bets the `3`). -/
 theorem case_one_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : b < a) (σ : Strategy₁) :
     Guarantees₁ a b σ (kuhnValue a b) ↔
       ∃ k ∈ Set.Icc (0 : ℝ) 1, σ = (![b / (2 * a + b), 0, 1], ![0, 2 * a / (2 * a + b), k]) := sorry
@@ -340,7 +341,7 @@ theorem case_three_I_unique (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a < b) 
     (σ : Strategy₁) :
     Guarantees₁ a b σ (kuhnValue a b) ↔ σ = (![0, 0, 0], ![0, (2 * a - b) / (2 * a + b), 1]) := sorry
 
-/-- The corrected Case 3 interval is sharp: with the other five coordinates of II's strategy as pinned, the calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/(2a + b) ≤ η ≤ b/(2a + b)`. Below the interval I gains by betting the `1` (bluffing); above it, by betting the `3` first. -/
+/-- The corrected Case 3 interval is sharp, `a ≤ b ≤ 2a`: with the other five coordinates of II's strategy as pinned, the calling probability `η` with the `2` guarantees the value exactly when `(2a − b)/(2a + b) ≤ η ≤ b/(2a + b)`. -/
 theorem case_three_II_iff (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a) (η : ℝ) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔
       η ∈ Set.Icc ((2 * a - b) / (2 * a + b)) (b / (2 * a + b)) := sorry
@@ -352,7 +353,7 @@ theorem case_three_II_set (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) 
       (2 * a + b) * (τ.2 0 + τ.2 1) ≤ b ∧ 4 * a ≤ (2 * a + b) * (τ.2 1 + τ.2 2) ∧
       2 * a * (2 * a + b) + 2 * a * b + b * (2 * a + b) * τ.2 0 ≤ (2 * a + b) * (2 * a + b) * τ.2 2 := sorry
 
-/-- Kuhn's printed Case 3 interval `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)` (p. 102) holds only at its lower end: there, and only there, II's strategy guarantees the value. -/
+/-- Kuhn's printed Case 3 interval `b/(2a + b) ≤ η ≤ (a + b)/(2a + b)` (p. 102) holds only at its lower end: for `a ≤ b ≤ 2a`, with the other five coordinates of II's strategy as pinned, `η` on the printed interval guarantees the value only at `η = b/(2a + b)`. -/
 theorem case_three_printed_interval (a b : ℝ) (ha : 0 < a) (hb : 0 < b) (hab : a ≤ b) (hb2 : b ≤ 2 * a)
     (η : ℝ) (hη : η ∈ Set.Icc (b / (2 * a + b)) ((a + b) / (2 * a + b))) :
     Guarantees₂ a b (![b / (2 * a + b), 0, 1], ![0, η, 1]) (kuhnValue a b) ↔ η = b / (2 * a + b) := sorry
